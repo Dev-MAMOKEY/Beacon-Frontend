@@ -22,8 +22,9 @@
   --color-border: #dee2e6;
 }
 
+/* OS 설정이 다크이고, 수동 라이트 오버라이드가 없을 때 */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --color-primary: #1a73e8;
     --color-primary-hover: #4c8df1;
     --color-secondary: #1e293b;
@@ -35,7 +36,26 @@
     --color-foreground: #f8f9fa;
     --color-foreground-muted: #94a3b8;
     --color-border: #334155;
+
+    color-scheme: dark;
   }
+}
+
+/* 수동 다크 강제 (OS 설정 무시) */
+.dark {
+  --color-primary: #1a73e8;
+  --color-primary-hover: #4c8df1;
+  --color-secondary: #1e293b;
+  --color-tertiary: #c55500;
+  --color-destructive: #ef4444;
+
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-foreground: #f8f9fa;
+  --color-foreground-muted: #94a3b8;
+  --color-border: #334155;
+
+  color-scheme: dark;
 }
 
 /* Expose CSS variables as Tailwind utilities (bg-primary, text-foreground, ...) */
@@ -56,8 +76,4 @@ html,
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
 }
