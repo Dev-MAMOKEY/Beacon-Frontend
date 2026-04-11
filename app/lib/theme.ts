@@ -1,16 +1,8 @@
 /**
- * Theme utilities
- *
- * 3가지 모드 지원:
+  * 테마 관련 유틸리티.
  * - "system": OS의 prefers-color-scheme 따름 (기본값)
  * - "light": 강제 라이트
  * - "dark": 강제 다크
- *
- * DOM 적용 규칙:
- * - system + OS light → 클래스 없음
- * - system + OS dark  → 클래스 없음 (CSS @media 쿼리가 처리)
- * - light             → html.light
- * - dark              → html.dark
  */
 
 export type Theme = "system" | "light" | "dark";
