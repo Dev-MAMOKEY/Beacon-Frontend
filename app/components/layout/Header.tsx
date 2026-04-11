@@ -17,7 +17,7 @@ type Props = {
  * 대시보드 상단 고정 헤더.
  * Figma: h-16, backdrop-blur, 좌측 검색 / 우측 알림·설정·(구분선)·프로필
  */
-export function TopNavBar({
+export function Header({
   user,
   searchPlaceholder = "Search students, sessions...",
 }: Props) {
