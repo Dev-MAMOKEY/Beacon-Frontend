@@ -3,11 +3,59 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: "Manrope", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  /* Brand */
+  --color-primary: #1a73e8;
+  --color-primary-hover: #185abc;
+  --color-secondary: #6077a6;
+  --color-tertiary: #c55500;
+  --color-destructive: #dc2626;
+
+  /* Surfaces & text */
+  --color-background: #ffffff;
+  --color-surface: #f1f3f5;
+  --color-foreground: #212529;
+  --color-foreground-muted: #6c757d;
+  --color-border: #dee2e6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #1a73e8;
+    --color-primary-hover: #4c8df1;
+    --color-secondary: #1e293b;
+    --color-tertiary: #c55500;
+    --color-destructive: #ef4444;
+
+    --color-background: #0f172a;
+    --color-surface: #1e293b;
+    --color-foreground: #f8f9fa;
+    --color-foreground-muted: #94a3b8;
+    --color-border: #334155;
+  }
+}
+
+/* Expose CSS variables as Tailwind utilities (bg-primary, text-foreground, ...) */
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-secondary: var(--color-secondary);
+  --color-tertiary: var(--color-tertiary);
+  --color-destructive: var(--color-destructive);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-foreground: var(--color-foreground);
+  --color-foreground-muted: var(--color-foreground-muted);
+  --color-border: var(--color-border);
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
