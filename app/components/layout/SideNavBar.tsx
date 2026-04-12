@@ -8,9 +8,10 @@ import {
   Settings,
   Users,
 } from "lucide-react";
-import { Link, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { BrandLogo } from "~/components/brand/BrandLogo";
 import { NavLink } from "~/components/nav/NavLink";
+import { Button } from "~/components/ui/Button";
 
 type NavItem = {
   to: string;
@@ -60,12 +61,9 @@ export function SideNavBar() {
       </div>
 
       <div className="flex flex-col gap-1 border-t border-border pt-6">
-        <Link
-          to="/sessions/new"
-          className="flex items-center justify-center rounded-xl bg-gradient-to-r from-primary to-primary-hover px-4 py-3 text-sm font-bold text-white shadow-[0px_10px_15px_-3px_rgba(0,91,191,0.2),0px_4px_6px_-4px_rgba(0,91,191,0.2)] transition-opacity hover:opacity-90"
-        >
+        <Button as="link" to="/sessions/new" variant="gradient" className="w-full py-3">
           New Session
-        </Link>
+        </Button>
         <div className="mt-4 flex flex-col">
           {FOOTER_NAV.map((item) => (
             <NavLink
