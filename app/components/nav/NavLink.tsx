@@ -10,22 +10,22 @@ type Props = {
 
 /**
  * 사이드바의 단일 네비 링크. 아이콘 + 라벨.
- * Figma Active: bg-border-subtle/50 + border-r-4 primary + text-primary
- * Inactive:     text-foreground-subtle + hover:bg-border-subtle/30
+ * Figma Active:   bg-border-subtle + border primary-hover + text-primary-hover, rounded pill
+ * Inactive:       text-foreground-subtle, 투명 border
  *
- * 보이지 않는 투명 right border를 inactive에도 두어 active 토글 시 폭이 안 밀린다.
+ * inactive에도 투명 border를 두어 active 토글 시 폭이 안 밀린다.
  */
 export function NavLink({ to, icon: Icon, label, active = false }: Props) {
   const base =
-    "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors border-r-4";
+    "flex w-[237px] items-center gap-[18px] rounded-[20px] border py-[14px] pl-[30px] pr-3 text-base transition-colors";
   const state = active
-    ? "bg-border-subtle/50 border-primary text-primary"
-    : "border-transparent text-foreground-subtle hover:bg-border-subtle/30 hover:text-foreground";
+    ? "border-primary-hover bg-border-subtle font-semibold text-primary-hover"
+    : "border-transparent font-medium text-foreground-subtle hover:bg-border-subtle/40 hover:text-foreground";
 
   return (
     <Link to={to} className={`${base} ${state}`}>
       <Icon className="size-[18px] shrink-0" />
-      <span>{label}</span>
+      <span className="whitespace-nowrap">{label}</span>
     </Link>
   );
 }
