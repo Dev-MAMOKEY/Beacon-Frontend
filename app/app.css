@@ -5,19 +5,22 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-display: "Manrope", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand */
-  --color-primary: #1a73e8;
-  --color-primary-hover: #185abc;
+  /* Brand (Figma 기준) */
+  --color-primary: #005bbf;
+  --color-primary-hover: #1a73e8;
   --color-secondary: #6077a6;
   --color-tertiary: #c55500;
-  --color-destructive: #dc2626;
+  --color-destructive: #ba1a1a;
 
-  /* Surfaces & text */
-  --color-background: #ffffff;
-  --color-surface: #f1f3f5;
-  --color-foreground: #212529;
-  --color-foreground-muted: #6c757d;
-  --color-border: #dee2e6;
+  /* Surfaces & text — Figma는 카드가 흰색, 페이지 배경이 연회색 */
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-foreground: #191c1d;
+  --color-foreground-muted: #414754;
+  --color-foreground-subtle: #64748b;
+  --color-border: #f1f5f9;
+  --color-border-subtle: #e2e8f0;
 }
 
 /* OS 설정이 다크이고, 수동 라이트 오버라이드가 없을 때 */
@@ -29,9 +32,12 @@
 
     --color-background: #0f172a;
     --color-surface: #1e293b;
-    --color-foreground: #f8f9fa;
-    --color-foreground-muted: #94a3b8;
-    --color-border: #334155;
+    --color-surface-muted: #111827;
+    --color-foreground: #f8fafc;
+    --color-foreground-muted: #cbd5e1;
+    --color-foreground-subtle: #94a3b8;
+    --color-border: #1e293b;
+    --color-border-subtle: #334155;
 
     color-scheme: dark;
   }
@@ -45,9 +51,12 @@
 
   --color-background: #0f172a;
   --color-surface: #1e293b;
-  --color-foreground: #f8f9fa;
-  --color-foreground-muted: #94a3b8;
-  --color-border: #334155;
+  --color-surface-muted: #111827;
+  --color-foreground: #f8fafc;
+  --color-foreground-muted: #cbd5e1;
+  --color-foreground-subtle: #94a3b8;
+  --color-border: #1e293b;
+  --color-border-subtle: #334155;
 
   color-scheme: dark;
 }
