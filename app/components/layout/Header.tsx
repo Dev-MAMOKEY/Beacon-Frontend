@@ -1,4 +1,4 @@
-import { Bell, Settings } from "lucide-react";
+import { Bell } from "lucide-react";
 import { IconButton } from "~/components/ui/IconButton";
 import { SearchInput } from "~/components/ui/SearchInput";
 import { UserProfile } from "~/components/user/UserProfile";
@@ -15,30 +15,30 @@ type Props = {
 
 /**
  * 대시보드 상단 고정 헤더.
- * Figma: h-16, backdrop-blur, 좌측 검색 / 우측 알림·설정·(구분선)·프로필
+ * Figma(node 221:987): 흰 배경, pt-20 pb-14 px-30.
+ * 좌측 검색 / 우측 프로필(이름·소속·아바타) · 구분선 · 알림 · 테마 토글
  */
 export function Header({
   user,
-  searchPlaceholder = "Search students, sessions...",
+  searchPlaceholder = "검색어를 입력하세요",
 }: Props) {
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-surface/80 px-8 backdrop-blur-[12px]">
+    <header className="sticky top-0 z-10 flex items-center justify-between bg-surface px-[30px] pb-[14px] pt-[20px]">
       <SearchInput placeholder={searchPlaceholder} />
 
-      <div className="flex items-center gap-4">
-        <IconButton aria-label="Notifications" badge>
-          <Bell className="size-[18px]" />
-        </IconButton>
-        <IconButton aria-label="Settings">
-          <Settings className="size-[18px]" />
-        </IconButton>
-        <ThemeToggle />
-        <div className="h-8 w-px bg-border-subtle" />
+      <div className="flex items-center gap-[26px]">
         <UserProfile
           name={user.name}
           role={user.role}
           avatarSrc={user.avatarSrc}
         />
+        <div className="h-12 w-px bg-border-subtle" />
+        <div className="flex items-center gap-2">
+          <IconButton aria-label="알림">
+            <Bell className="size-[18px]" />
+          </IconButton>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

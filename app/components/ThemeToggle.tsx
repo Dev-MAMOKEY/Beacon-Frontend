@@ -55,7 +55,7 @@ export function ThemeToggle() {
       onClick={cycleTheme}
       aria-label={label}
       title={label}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-colors hover:bg-primary/10"
+      className="relative inline-flex size-9 items-center justify-center rounded-full text-foreground-muted transition-colors hover:bg-border-subtle/60 hover:text-foreground"
     >
       <span className={mounted ? "" : "invisible"}>
         {theme === "system" && <Monitor className="size-[18px]" />}

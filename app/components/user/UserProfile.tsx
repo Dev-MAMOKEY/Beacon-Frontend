@@ -5,17 +5,18 @@ type Props = {
 };
 
 /**
- * 헤더 우측에 표시하는 유저 정보. 우측 정렬 2줄 텍스트 + 40px 원형 아바타.
+ * 헤더 우측에 표시하는 유저 정보. 우측 정렬 2줄 텍스트 + 48px 원형 아바타.
+ * Figma(223:1140): 이름 18px SemiBold, 소속 12px Medium, gap-21, 아바타 48px
  * avatarSrc 없으면 이름 첫 글자로 fallback.
  */
 export function UserProfile({ name, role, avatarSrc }: Props) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex flex-col items-end">
-        <span className="text-xs font-bold leading-4 text-foreground">
+    <div className="flex items-center gap-[21px]">
+      <div className="flex flex-col items-end gap-1">
+        <span className="text-lg font-semibold leading-none text-foreground">
           {name}
         </span>
-        <span className="text-[10px] font-normal uppercase leading-[15px] tracking-[-0.5px] text-foreground-subtle">
+        <span className="text-xs font-medium leading-none text-foreground-subtle">
           {role}
         </span>
       </div>
@@ -28,7 +29,7 @@ function Avatar({ name, src }: { name: string; src?: string }) {
   const initial = name.trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <div className="relative size-10 overflow-hidden rounded-full border-2 border-surface bg-border-subtle">
+    <div className="relative size-12 overflow-hidden rounded-full border-2 border-surface bg-border-subtle">
       {src ? (
         <img
           src={src}

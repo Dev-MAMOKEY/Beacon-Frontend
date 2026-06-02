@@ -9,25 +9,25 @@ type Props = {
 
 /**
  * Pill-shaped 검색 인풋. 좌측 아이콘 고정.
- * Figma: bg #e7e8e9, placeholder #6b7280, rounded-full, w-64
+ * Figma(221:988): bg #e7e8e9(border-subtle), rounded-[20px], w-237, pl-20 gap-12, placeholder #94a3b8 14px
  */
 export function SearchInput({
-  placeholder = "Search...",
+  placeholder = "검색어를 입력하세요",
   value,
   onChange,
   className = "",
 }: Props) {
   return (
     <div
-      className={`relative flex h-9 w-64 items-center rounded-full bg-border-subtle/60 ${className}`}
+      className={`relative flex w-[237px] items-center rounded-[20px] bg-border-subtle ${className}`}
     >
-      <Search className="pointer-events-none absolute left-3 size-[14px] text-foreground-subtle" />
+      <Search className="pointer-events-none absolute left-5 size-[14px] text-foreground-subtle" />
       <input
         type="search"
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
-        className="h-full w-full bg-transparent pl-9 pr-4 text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none"
+        className="h-full w-full bg-transparent py-[14px] pl-[46px] pr-4 text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none"
       />
     </div>
   );

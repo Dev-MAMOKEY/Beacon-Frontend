@@ -1,9 +1,7 @@
 import {
-  CalendarClock,
+  Calendar,
   ClipboardCheck,
   LayoutDashboard,
-  LifeBuoy,
-  LogOut,
   type LucideIcon,
   Settings,
   Users,
@@ -11,7 +9,6 @@ import {
 import { useLocation } from "react-router";
 import { BrandLogo } from "~/components/brand/BrandLogo";
 import { NavLink } from "~/components/nav/NavLink";
-import { Button } from "~/components/ui/Button";
 
 type NavItem = {
   to: string;
@@ -20,21 +17,17 @@ type NavItem = {
 };
 
 const MAIN_NAV: NavItem[] = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/sessions", icon: CalendarClock, label: "Session Management" },
-  { to: "/attendance", icon: ClipboardCheck, label: "Attendance Status" },
-  { to: "/members", icon: Users, label: "Members & Stats" },
-  { to: "/settings", icon: Settings, label: "Settings" },
-];
-
-const FOOTER_NAV: NavItem[] = [
-  { to: "/support", icon: LifeBuoy, label: "Support" },
-  { to: "/logout", icon: LogOut, label: "Sign Out" },
+  { to: "/", icon: LayoutDashboard, label: "대시 보드" },
+  { to: "/sessions", icon: Calendar, label: "세션 관리" },
+  { to: "/members", icon: Users, label: "멤버/통계" },
+  { to: "/attendance", icon: ClipboardCheck, label: "출석 현황" },
+  { to: "/settings", icon: Settings, label: "설정 메뉴" },
 ];
 
 /**
  * 대시보드 좌측 사이드바.
- * Figma: w-64, bg surface-muted, 3단(로고 / 네비 / 하단 CTA+링크)
+ * Figma(node 142:327): 흰색 배경, px-30 py-40, 로고와 네비 사이 gap-50.
+ * 네비 항목은 gap-16, active 항목은 라운드 pill(연회색 배경 + primary 보더/텍스트).
  * 현재 URL과 매칭해 NavLink의 active 상태를 자동 결정한다.
  */
 export function SideNavBar() {
@@ -44,38 +37,19 @@ export function SideNavBar() {
     to === "/" ? pathname === "/" : pathname.startsWith(to);
 
   return (
-    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-border-subtle bg-surface-muted px-4 py-8">
-      <div className="flex flex-col">
-        <BrandLogo />
-        <nav className="mt-10 flex flex-col gap-1">
-          {MAIN_NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              icon={item.icon}
-              label={item.label}
-              active={isActive(item.to)}
-            />
-          ))}
-        </nav>
-      </div>
-
-      <div className="flex flex-col gap-1 border-t border-border pt-6">
-        <Button as="link" to="/sessions/new" variant="gradient" className="w-full py-3">
-          New Session
-        </Button>
-        <div className="mt-4 flex flex-col">
-          {FOOTER_NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              icon={item.icon}
-              label={item.label}
-              active={isActive(item.to)}
-            />
-          ))}
-        </div>
-      </div>
+    <aside className="sticky top-0 flex h-screen w-[297px] shrink-0 flex-col gap-[50px] border-r border-border-subtle bg-surface px-[30px] py-[40px]">
+      <BrandLogo />
+      <nav className="flex flex-col gap-4">
+        {MAIN_NAV.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            icon={item.icon}
+            label={item.label}
+            active={isActive(item.to)}
+          />
+        ))}
+      </nav>
     </aside>
   );
 }
