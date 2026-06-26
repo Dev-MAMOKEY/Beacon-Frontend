@@ -47,7 +47,7 @@ export function SessionCalendar({
   ];
 
   return (
-    <div className="flex flex-col gap-[24px] rounded-[24px] bg-surface p-[40px]">
+    <div className="flex w-full flex-col gap-[24px] rounded-[24px] bg-surface p-[40px]">
       <div className="flex items-end gap-[10px]">
         <p className="text-[38px] font-semibold text-foreground">{month}월</p>
         <p className="text-[18px] font-medium text-foreground-subtle">{year}년</p>

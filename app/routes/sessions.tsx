@@ -51,43 +51,46 @@ export default function Sessions() {
       <SideNavBar />
       <div className="flex flex-1 flex-col">
         <Header user={{ name: "김신한님", role: "마모키 팀원" }} />
-        <main className="flex flex-1 justify-center gap-[30px] p-[30px]">
-          <div className="flex flex-col gap-[32px]">
-            <PageHeading
-              title="세션 관리"
-              date="2026년 5월 16일"
-              titleClassName="text-foreground-subtle"
-            />
-            <SessionCalendar />
-          </div>
-
-          <div className="flex flex-1 flex-col gap-[34px]">
-            <div className="flex flex-col gap-[24px]">
-              <button
-                type="button"
-                onClick={() => setEditOpen(true)}
-                className="flex w-[300px] items-center justify-center gap-[12px] rounded-[20px] bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
-              >
-                <Plus className="size-[16px]" />새 세션 만들기
-              </button>
-              <button
-                type="button"
-                onClick={() => setEditOpen(true)}
-                className="flex w-[300px] items-center justify-center gap-[12px] rounded-[20px] bg-primary px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
-              >
-                <Repeat className="size-[18px]" />반복 세션 만들기
-              </button>
+        <main className="flex-1 overflow-x-auto p-[30px]">
+          <div className="mx-auto flex w-fit gap-[30px]">
+            <div className="flex w-[720px] shrink-0 flex-col gap-[32px]">
+              <PageHeading
+                title="세션 관리"
+                date="2026년 5월 16일"
+                titleClassName="text-foreground-subtle"
+              />
+              <SessionCalendar />
             </div>
 
-            <div className="flex flex-1 flex-col gap-[24px] rounded-[22px] bg-[#f3f4f5] p-[18px]">
-              {SESSIONS.map((session, i) => (
-                <SessionCard
-                  key={`${session.date}-${session.title}`}
-                  {...session}
-                  className={DIM[i] ?? "opacity-30"}
-                  onEdit={() => setEditOpen(true)}
-                />
-              ))}
+            <div className="flex w-[333px] shrink-0 flex-col gap-[34px]">
+              <div className="flex flex-col gap-[24px]">
+                <button
+                  type="button"
+                  onClick={() => setEditOpen(true)}
+                  className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
+                >
+                  <Plus className="size-[16px]" />새 세션 만들기
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditOpen(true)}
+                  className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-primary px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  <Repeat className="size-[18px]" />
+                  반복 세션 만들기
+                </button>
+              </div>
+
+              <div className="flex flex-1 flex-col gap-[24px] rounded-[22px] bg-[#f3f4f5] p-[18px]">
+                {SESSIONS.map((session, i) => (
+                  <SessionCard
+                    key={`${session.date}-${session.title}`}
+                    {...session}
+                    className={DIM[i] ?? "opacity-30"}
+                    onEdit={() => setEditOpen(true)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </main>
