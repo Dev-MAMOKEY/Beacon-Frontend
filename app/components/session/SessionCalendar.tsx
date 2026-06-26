@@ -69,16 +69,15 @@ export function SessionCalendar({
           if (day === null) return <div key={`empty-${i}`} />;
           const marker = markers[day];
           const isToday = day === today;
-          const pill = marker
-            ? `rounded-[20px] ${MARKER_BG[marker]}`
-            : "";
-          const ring = isToday ? "rounded-[20px] border-[3px] border-[#ff894d]" : "";
+          const bg = marker ? MARKER_BG[marker] : "";
+          const ring = isToday ? "border-[3px] border-[#ff894d]" : "";
           return (
-            <div
-              key={day}
-              className={`flex items-center justify-center px-[10px] py-[8px] text-[20px] font-semibold text-foreground ${pill} ${ring}`}
-            >
-              {day}
+            <div key={day} className="flex items-center justify-center py-[4px]">
+              <span
+                className={`flex size-[44px] items-center justify-center rounded-full text-[20px] font-semibold text-foreground ${bg} ${ring}`}
+              >
+                {day}
+              </span>
             </div>
           );
         })}
