@@ -6,7 +6,8 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "gen:api": "openapi-typescript http://43.203.209.87:8081/v3/api-docs -o app/lib/api/schema.d.ts"
   },
   "dependencies": {
     "@react-router/node": "7.14.0",
