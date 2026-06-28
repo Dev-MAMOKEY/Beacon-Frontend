@@ -8,7 +8,7 @@ const MIN_PASSWORD_LENGTH = 8;
 
 /**
  * 회원가입 폼. 학번·이름·비밀번호·비밀번호 확인 입력 + 회원가입 버튼 + 로그인 안내.
- * 제출 시 비밀번호 일치 검증 후 authApi.signup 호출 → 성공 시 로그인 화면으로 이동.
+ * 제출 시 비밀번호 일치 검증 후 authApi.signup 호출 → 성공 시 자동 로그인 후 대시보드로 이동.
  * Figma(221:789).
  */
 export function SignupForm() {
@@ -58,13 +58,23 @@ export function SignupForm() {
     setSubmitting(true);
     try {
       await authApi.signup({ stdId, password, name: name.trim() });
-      navigate("/login");
     } catch (err) {
       setError(
         err instanceof ApiError
           ? err.message
           : "회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.",
       );
+      setSubmitting(false);
+      return;
+    }
+
+    // 가입 성공 → 동일 자격증명으로 자동 로그인(토큰 저장) 후 대시보드로 이동.
+    try {
+      await authApi.login({ stdId, password });
+      navigate("/");
+    } catch {
+      // 가입은 완료됐으나 자동 로그인 실패 시 로그인 화면으로 유도.
+      navigate("/login");
     } finally {
       setSubmitting(false);
     }
