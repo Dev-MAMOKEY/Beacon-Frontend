@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { type MemberProfileResponse, membersApi } from "~/lib/api";
+import {
+  getAccessToken,
+  type MemberProfileResponse,
+  membersApi,
+} from "~/lib/api";
 
 type State = {
   profile: MemberProfileResponse | null;
@@ -7,21 +11,56 @@ type State = {
   error: string | null;
 };
 
+// 모듈 레벨 캐시: 페이지 이동(헤더 재마운트)마다 재요청하지 않도록 1회만 조회한다.
+// 토큰이 바뀌면(로그인/로그아웃) 캐시가 무효화되어 다시 조회한다.
+let cache: { token: string | null; profile: MemberProfileResponse } | null =
+  null;
+let inflight: Promise<MemberProfileResponse> | null = null;
+
+function hasFreshCache(): boolean {
+  return cache !== null && cache.token === getAccessToken();
+}
+
+function loadProfile(): Promise<MemberProfileResponse> {
+  if (hasFreshCache()) return Promise.resolve(cache!.profile);
+  if (!inflight) {
+    inflight = membersApi
+      .getMyProfile()
+      .then((profile) => {
+        cache = { token: getAccessToken(), profile };
+        return profile;
+      })
+      .finally(() => {
+        inflight = null;
+      });
+  }
+  return inflight;
+}
+
+/** 프로필 캐시를 비운다(로그아웃 등에서 호출). */
+export function clearMyProfileCache(): void {
+  cache = null;
+  inflight = null;
+}
+
 /**
  * 로그인 사용자의 프로필(GET /members/me)을 조회한다.
- * 클라이언트에서만 실행(토큰이 localStorage 기반)되며, 마운트 시 1회 호출한다.
+ * 모듈 캐시를 사용해 페이지 이동 시 재요청하지 않는다.
  */
 export function useMyProfile(): State {
-  const [state, setState] = useState<State>({
-    profile: null,
-    loading: true,
-    error: null,
-  });
+  const [state, setState] = useState<State>(() =>
+    hasFreshCache()
+      ? { profile: cache!.profile, loading: false, error: null }
+      : { profile: null, loading: true, error: null },
+  );
 
   useEffect(() => {
+    if (hasFreshCache()) {
+      setState({ profile: cache!.profile, loading: false, error: null });
+      return;
+    }
     let active = true;
-    membersApi
-      .getMyProfile()
+    loadProfile()
       .then((profile) => {
         if (active) setState({ profile, loading: false, error: null });
       })
