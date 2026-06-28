@@ -686,8 +686,6 @@ export interface components {
             /** Format: int32 */
             stdId: number;
             password: string;
-            /** Format: int32 */
-            grade: number;
             name: string;
         };
         RsDataSignupResponse: {
@@ -904,12 +902,12 @@ export interface components {
             dealeted?: boolean;
         };
         PageableObject: {
+            unpaged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             paged?: boolean;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
@@ -951,19 +949,19 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["Session"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         SortObject: {
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
             empty?: boolean;
         };
         RsDataSession: {
@@ -999,14 +997,14 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["AttendanceDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         AttendanceRecordItem: {
