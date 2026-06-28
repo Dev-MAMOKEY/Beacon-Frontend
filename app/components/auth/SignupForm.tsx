@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router";
 import { TextField } from "~/components/ui/TextField";
 import { ApiError, authApi } from "~/lib/api";
 
+/** 백엔드 비밀번호 정책에 맞춘 최소 길이 (정확한 정책 확정 시 조정). */
+const MIN_PASSWORD_LENGTH = 8;
+
 /**
  * 회원가입 폼. 학번·이름·비밀번호·비밀번호 확인 입력 + 회원가입 버튼 + 로그인 안내.
  * 제출 시 비밀번호 일치 검증 후 authApi.signup 호출 → 성공 시 로그인 화면으로 이동.
@@ -32,6 +35,11 @@ export function SignupForm() {
     }
     if (!password) {
       setError("비밀번호를 입력해주세요.");
+      return;
+    }
+    // 백엔드 비밀번호 정책(최소 길이) 위반 시 서버가 500을 반환하므로 선검증.
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다.`);
       return;
     }
     if (password !== passwordConfirm) {
