@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { Header } from "~/components/layout/Header";
+import { AppHeader } from "~/components/layout/AppHeader";
 import { SideNavBar } from "~/components/layout/SideNavBar";
 import { PageHeading } from "~/components/dashboard/PageHeading";
 import { MetricCard } from "~/components/dashboard/MetricCard";
@@ -28,7 +28,7 @@ export default function Home() {
     <div className="flex min-h-screen">
       <SideNavBar />
       <div className="flex flex-1 flex-col">
-        <Header user={{ name: "김신한님", role: "마모키 팀원" }} />
+        <AppHeader />
         <main className="flex flex-1 flex-col gap-[32px] px-[30px] pb-[30px] pt-[16px]">
           <PageHeading
             title="대시 보드"
