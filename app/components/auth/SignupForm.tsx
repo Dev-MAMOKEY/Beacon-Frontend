@@ -20,6 +20,14 @@ export function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // 모든 조건 충족 시 버튼 활성(파랑) 표시.
+  const isValid =
+    studentId.trim() !== "" &&
+    !Number.isNaN(Number(studentId.trim())) &&
+    name.trim() !== "" &&
+    password.length >= MIN_PASSWORD_LENGTH &&
+    password === passwordConfirm;
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -113,7 +121,11 @@ export function SignupForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-[16px] bg-border-subtle px-[80px] py-[18px] text-[18px] font-medium text-foreground-subtle transition-opacity hover:opacity-90 disabled:opacity-60"
+        className={`w-full rounded-[16px] px-[80px] py-[18px] text-[18px] font-medium transition-colors disabled:opacity-60 ${
+          isValid
+            ? "bg-primary text-white hover:bg-primary-hover"
+            : "bg-border-subtle text-foreground-subtle"
+        }`}
       >
         {submitting ? "가입 중..." : "회원가입"}
       </button>
