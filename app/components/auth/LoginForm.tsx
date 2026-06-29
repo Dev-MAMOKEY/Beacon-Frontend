@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { TextField } from "~/components/ui/TextField";
 import { ApiError, authApi } from "~/lib/api";
 
@@ -10,6 +10,7 @@ import { ApiError, authApi } from "~/lib/api";
  */
 export function LoginForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export function LoginForm() {
     setSubmitting(true);
     try {
       await authApi.login({ stdId, password });
-      navigate("/");
+      navigate(searchParams.get("redirectTo") ?? "/");
     } catch (err) {
       setError(
         err instanceof ApiError
