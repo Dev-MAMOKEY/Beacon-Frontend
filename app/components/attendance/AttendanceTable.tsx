@@ -24,10 +24,10 @@ const HEADERS = [
   "상태 변경",
 ];
 
-/** 출석 상태별 색상. Figma: 출석 #22c55e, 지각 #fbbf24, 결석 #ba1a1a. */
+/** 출석 상태별 색상(테마 토큰). 출석 success, 지각 warning, 결석 destructive. */
 const STATUS_COLOR: Record<AttendanceStatus, string> = {
-  출석: "text-[#22c55e]",
-  지각: "text-[#fbbf24]",
+  출석: "text-success",
+  지각: "text-warning",
   결석: "text-destructive",
 };
 
@@ -49,7 +49,7 @@ export function AttendanceTable({ rows }: Props) {
         <div
           key={r.studentId}
           className={`grid grid-cols-7 py-[22px] text-[20px] font-semibold ${
-            i % 2 === 0 ? "bg-[#f8f8f8]" : "bg-surface"
+            i % 2 === 0 ? "bg-surface-alt" : "bg-surface"
           }`}
         >
           <span className="text-foreground-muted">{r.name}</span>
