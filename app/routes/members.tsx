@@ -89,7 +89,7 @@ export default function Members() {
                 className={`pb-[4px] text-[24px] font-bold ${
                   tab === t
                     ? "border-b-[3px] border-primary-hover text-primary-hover"
-                    : "text-[#94a3b8]"
+                    : "text-foreground-subtle"
                 }`}
               >
                 {t}
@@ -102,7 +102,7 @@ export default function Members() {
               <div className="flex w-full justify-end pr-[30px]">
                 <button
                   type="button"
-                  className="rounded-[16px] bg-[#adc7ff] px-[32px] py-[10px] text-[18px] font-semibold text-foreground-muted transition-opacity hover:opacity-90"
+                  className="rounded-[16px] bg-primary-container px-[32px] py-[10px] text-[18px] font-semibold text-foreground-muted transition-opacity hover:opacity-90"
                 >
                   편집하기
                 </button>

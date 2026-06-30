@@ -40,12 +40,12 @@ export default function Home() {
             <MetricCard
               label="오늘 출석 수"
               value={10}
-              valueClassName="text-[#16a34a]"
+              valueClassName="text-success"
             />
             <MetricCard
               label="오늘 지각 수"
               value={2}
-              valueClassName="text-[#fbbf24]"
+              valueClassName="text-warning"
             />
             <MetricCard label="전체 멤버 수" value={14} />
             <MetricCard
