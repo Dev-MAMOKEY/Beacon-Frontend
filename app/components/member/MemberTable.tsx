@@ -37,7 +37,7 @@ export function MemberTable({ members, onExclude }: Props) {
         <div
           key={m.studentId}
           className={`grid grid-cols-6 items-center py-[20px] text-[20px] font-semibold text-foreground-muted ${
-            i % 2 === 0 ? "bg-[#f8f8f8]" : "bg-surface"
+            i % 2 === 0 ? "bg-surface-alt" : "bg-surface"
           }`}
         >
           <span className="text-center">{m.name}</span>
