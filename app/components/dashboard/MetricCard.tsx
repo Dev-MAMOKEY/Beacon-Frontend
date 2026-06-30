@@ -1,7 +1,7 @@
 type Props = {
   label: string;
   value: string | number;
-  /** 값 텍스트 색상 클래스 (예: "text-[#16a34a]"). 기본 foreground. */
+  /** 값 텍스트 색상 클래스 (예: "text-success"). 기본 foreground. */
   valueClassName?: string;
   /** 값 뒤에 붙는 단위 (예: "%"). */
   unit?: string;
