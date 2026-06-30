@@ -101,7 +101,7 @@ export function AttendanceChart({
                 key={s.label}
                 points={toPolyline(s.points)}
                 fill="none"
-                stroke={s.stroke}
+                style={{ stroke: s.stroke }}
                 strokeWidth={2}
                 vectorEffect="non-scaling-stroke"
                 strokeLinejoin="round"
