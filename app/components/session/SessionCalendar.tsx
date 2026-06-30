@@ -12,11 +12,11 @@ type Props = {
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-/** 분류별 날짜 마커 배경. Figma(163:357). */
+/** 분류별 날짜 마커 배경(테마 토큰 + 불투명도). Figma(163:357). */
 const MARKER_BG: Record<ActivityCategory, string> = {
-  동아리: "bg-[rgba(26,115,232,0.5)]",
-  회의: "bg-[rgba(160,126,255,0.5)]",
-  프로젝트: "bg-[rgba(255,182,145,0.5)]",
+  동아리: "bg-primary-hover/50",
+  회의: "bg-accent-meeting/50",
+  프로젝트: "bg-accent-project/50",
 };
 
 const DEFAULT_MARKERS: Record<number, ActivityCategory> = {
@@ -58,7 +58,7 @@ export function SessionCalendar({
           <div
             key={w}
             className={`flex items-center justify-center px-[10px] py-[8px] text-[20px] font-semibold ${
-              i === 0 ? "text-[#ce2121]" : "text-foreground"
+              i === 0 ? "text-destructive" : "text-foreground"
             }`}
           >
             {w}
@@ -70,7 +70,7 @@ export function SessionCalendar({
           const marker = markers[day];
           const isToday = day === today;
           const bg = marker ? MARKER_BG[marker] : "";
-          const ring = isToday ? "border-[3px] border-[#ff894d]" : "";
+          const ring = isToday ? "border-[3px] border-accent-project" : "";
           return (
             <div key={day} className="flex items-center justify-center py-[4px]">
               <span

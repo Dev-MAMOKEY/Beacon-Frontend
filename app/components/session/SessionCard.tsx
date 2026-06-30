@@ -43,12 +43,16 @@ export function SessionCard({
 
       <div className="flex flex-col gap-[16px] rounded-[20px] bg-surface px-[26px] pb-[28px] pt-[20px]">
         <div className="flex items-center justify-between">
-          <span className="text-[20px] font-semibold text-[#727785]">{time}</span>
+          <span className="text-[20px] font-semibold text-foreground-subtle">
+            {time}
+          </span>
           <ActivityBadge category={category} />
         </div>
         <div className="flex flex-col gap-[10px]">
           <p className="text-[18px] font-semibold text-foreground">{title}</p>
-          <p className="text-[16px] font-medium text-[#8b909f]">{location}</p>
+          <p className="text-[16px] font-medium text-foreground-subtle">
+            {location}
+          </p>
         </div>
       </div>
 
