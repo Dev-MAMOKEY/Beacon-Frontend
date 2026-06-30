@@ -11,7 +11,7 @@ type Props = {
 
 /**
  * 원형 아이콘 버튼. 내부에 <SearchIcon /> 등 아이콘 컴포넌트를 children으로 전달.
- * Figma: p-2, rounded-full, 알림 뱃지는 우상단 8px 빨간 닷 (#ba1a1a)
+ * Figma: p-2, rounded-full, 알림 뱃지는 우상단 8px 빨간 닷 (destructive)
  */
 export function IconButton({
   children,

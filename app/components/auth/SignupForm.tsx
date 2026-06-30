@@ -141,7 +141,7 @@ export function SignupForm() {
       </button>
 
       <div className="flex items-center justify-center gap-[10px]">
-        <span className="text-[16px] text-[#787878]">이미 계정이 있으신가요?</span>
+        <span className="text-[16px] text-foreground-subtle">이미 계정이 있으신가요?</span>
         <Link to="/login" className="text-[16px] text-foreground underline">
           로그인하기
         </Link>

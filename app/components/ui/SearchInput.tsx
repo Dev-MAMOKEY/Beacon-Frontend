@@ -9,7 +9,7 @@ type Props = {
 
 /**
  * Pill-shaped 검색 인풋. 좌측 아이콘 고정.
- * Figma(221:988): bg #e7e8e9(border-subtle), rounded-[20px], w-237, pl-20 gap-12, placeholder #94a3b8 14px
+ * Figma(221:988): bg border-subtle, rounded-[20px], w-237, pl-20 gap-12, placeholder foreground-subtle 14px
  */
 export function SearchInput({
   placeholder = "검색어를 입력하세요",

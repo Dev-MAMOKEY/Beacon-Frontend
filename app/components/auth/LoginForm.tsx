@@ -78,7 +78,7 @@ export function LoginForm() {
           <div className="flex justify-end">
             <Link
               to="/find-password"
-              className="text-[16px] text-[#787878] hover:underline"
+              className="text-[16px] text-foreground-subtle hover:underline"
             >
               비밀번호 찾기
             </Link>
@@ -103,7 +103,7 @@ export function LoginForm() {
       </button>
 
       <div className="flex items-center justify-center gap-[10px]">
-        <span className="text-[16px] text-[#787878]">아직 회원이 아니신가요?</span>
+        <span className="text-[16px] text-foreground-subtle">아직 회원이 아니신가요?</span>
         <Link to="/signup" className="text-[16px] text-foreground underline">
           회원가입 시작하기
         </Link>
