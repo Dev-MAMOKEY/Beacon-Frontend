@@ -21,7 +21,10 @@ function hasFreshCache(): boolean {
   return cache !== null && cache.token === getAccessToken();
 }
 
-function loadProfile(): Promise<MemberProfileResponse> {
+/**
+ * 프로필을 조회한다(모듈 캐시 사용). 미들웨어 등 훅 밖에서도 재사용 가능.
+ */
+export function loadMyProfile(): Promise<MemberProfileResponse> {
   if (hasFreshCache()) return Promise.resolve(cache!.profile);
   if (!inflight) {
     inflight = membersApi
@@ -60,7 +63,7 @@ export function useMyProfile(): State {
       return;
     }
     let active = true;
-    loadProfile()
+    loadMyProfile()
       .then((profile) => {
         if (active) setState({ profile, loading: false, error: null });
       })
