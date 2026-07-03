@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { useMyProfile } from "./use-my-profile";
 import {
   getStoredActiveClubId,
-  resolveActiveClubId,
   setStoredActiveClubId,
+  subscribeActiveClub,
 } from "~/lib/club/active-club";
 
 type State = {
@@ -13,37 +13,43 @@ type State = {
   activeClubId: number | null;
   loading: boolean;
   error: string | null;
-  /** 활성 동아리를 전환한다(localStorage 영속). */
+  /** 활성 동아리를 전환한다(전역 전파 + localStorage 영속). */
   setActiveClub: (clubId: number) => void;
 };
 
+/** 저장값과 clubIds로 활성 clubId 결정. 저장값이 목록에 없으면 첫 항목 폴백. */
+function resolve(clubIds: number[], stored: number | null): number | null {
+  if (clubIds.length === 0) return null;
+  if (stored !== null && clubIds.includes(stored)) return stored;
+  return clubIds[0];
+}
+
 /**
- * members/me의 clubIds와 localStorage 선택을 조합해 활성 동아리를 제공한다.
- * 저장값이 목록에 없으면 첫 항목으로 폴백하고 저장값을 동기화한다.
+ * members/me의 clubIds와 공유 활성 선택을 조합해 활성 동아리를 제공한다.
+ * 활성 clubId는 useSyncExternalStore로 구독되어, 어느 컴포넌트에서 전환하든
+ * 모든 소비자가 함께 갱신된다.
  */
 export function useActiveClub(): State {
   const { profile, loading, error } = useMyProfile();
   const clubIds = profile?.clubIds ?? [];
-  const clubKey = clubIds.join(",");
 
-  const [activeClubId, setActiveClubId] = useState<number | null>(() =>
-    resolveActiveClubId(profile?.clubIds),
+  const stored = useSyncExternalStore(
+    subscribeActiveClub,
+    getStoredActiveClubId,
+    () => null,
   );
 
-  // 프로필(clubIds) 변경 시 활성 clubId 재확정 + 폴백 결과 저장 동기화.
+  const activeClubId = resolve(clubIds, stored);
+
+  // 폴백으로 결정된 활성값을 저장에 동기화(전역 전파).
   useEffect(() => {
-    const resolved = resolveActiveClubId(clubIds);
-    setActiveClubId(resolved);
-    if (resolved !== null && resolved !== getStoredActiveClubId()) {
-      setStoredActiveClubId(resolved);
+    if (activeClubId !== null && activeClubId !== stored) {
+      setStoredActiveClubId(activeClubId);
     }
-    // clubKey로 목록 변화만 추적(배열 identity 변화 무시).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clubKey]);
+  }, [activeClubId, stored]);
 
   const setActiveClub = useCallback((clubId: number) => {
     setStoredActiveClubId(clubId);
-    setActiveClubId(clubId);
   }, []);
 
   return { clubIds, activeClubId, loading, error, setActiveClub };
