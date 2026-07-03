@@ -727,6 +727,7 @@ export interface components {
         };
         MemberProfileResponse: {
             name?: string;
+            clubIds?: number[];
             /** Format: int32 */
             stdId?: number;
             pushEnabled?: boolean;
