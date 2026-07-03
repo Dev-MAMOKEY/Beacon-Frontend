@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SettingsField } from "./SettingsField";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 
 /**
  * 비콘 설정 카드.
+ * 대응 API가 없어 입력값은 로컬 상태로만 관리한다(서버 연동 제외).
  * Figma(188:819): bg-surface, rounded-20, pl-34 pr-50 py-40, gap-30.
  * 좌측 UUID·RSSI 게이지 / 우측 회색 패널(지각 시간 기준·RSSI 안정화 시간).
  */
@@ -16,6 +18,10 @@ export function BeaconSettingsCard({
   rssi = "-70dBm",
   signalPercent = 94,
 }: Props) {
+  const [uuid, setUuid] = useState("");
+  const [lateThreshold, setLateThreshold] = useState("");
+  const [rssiStabilization, setRssiStabilization] = useState("");
+
   return (
     <div className="flex flex-1 flex-col gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
       <h2 className="text-[22px] font-bold text-foreground-subtle">비콘 설정</h2>
@@ -26,6 +32,8 @@ export function BeaconSettingsCard({
             label="UUID"
             placeholder="e.g. FDA50693-A4E2-4FB1A4E2-4FB1"
             className="w-full"
+            value={uuid}
+            onChange={(e) => setUuid(e.target.value)}
           />
 
           <div className="flex flex-col gap-[14px]">
@@ -58,12 +66,18 @@ export function BeaconSettingsCard({
             placeholder="분"
             align="right"
             className="w-full"
+            inputMode="numeric"
+            value={lateThreshold}
+            onChange={(e) => setLateThreshold(e.target.value)}
           />
           <SettingsField
             label="RSSI 신호 안정화 시간"
             placeholder="초"
             align="right"
             className="w-full"
+            inputMode="numeric"
+            value={rssiStabilization}
+            onChange={(e) => setRssiStabilization(e.target.value)}
           />
         </div>
       </div>
