@@ -36,3 +36,19 @@ export function resolveActiveClubId(
   if (stored !== null && clubIds.includes(stored)) return stored;
   return clubIds[0];
 }
+
+// 동아리별 고정 UUID. createClub 응답에만 있고 getClub은 반환하지 않아,
+// 생성 시점에 저장해 비콘 설정에서 재사용한다.
+const CLUB_UUID_PREFIX = "beacon.clubUuid.";
+
+/** 동아리 고정 UUID를 저장(생성 시). */
+export function storeClubUuid(clubId: number, uuid: string): void {
+  if (!isBrowser) return;
+  window.localStorage.setItem(`${CLUB_UUID_PREFIX}${clubId}`, uuid);
+}
+
+/** 저장된 동아리 고정 UUID. 없으면 null. */
+export function getClubUuid(clubId: number): string | null {
+  if (!isBrowser) return null;
+  return window.localStorage.getItem(`${CLUB_UUID_PREFIX}${clubId}`);
+}
