@@ -95,12 +95,12 @@ export default function Attendance() {
             <MetricCard
               label="출석"
               value={5}
-              valueClassName="text-[#16a34a]"
+              valueClassName="text-success"
             />
             <MetricCard
               label="지각"
               value={1}
-              valueClassName="text-[#fbbf24]"
+              valueClassName="text-warning"
             />
             <MetricCard
               label="결석"

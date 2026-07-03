@@ -13,10 +13,10 @@ type Props = {
   moreCount?: number;
 };
 
-/** 상태별 강조 색상. Figma: 출석 #0fa245, 지각 #f4b000, 결석 destructive. */
+/** 상태별 강조 색상(테마 토큰). 출석 success, 지각 warning, 결석 destructive. */
 const STATUS_COLOR: Record<AttendanceStatus, string> = {
-  출석: "text-[#0fa245]",
-  지각: "text-[#f4b000]",
+  출석: "text-success",
+  지각: "text-warning",
   결석: "text-destructive",
 };
 

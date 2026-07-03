@@ -12,7 +12,7 @@ export function CodeGenerationCard() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="size-[64px] rounded-[10px] border-2 border-[#c1c6d6]"
+            className="size-[64px] rounded-[10px] border-2 border-input"
           />
         ))}
       </div>

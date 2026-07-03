@@ -32,7 +32,7 @@ function Section({
     <div
       className={`flex flex-col gap-[12px] rounded-[20px] bg-surface px-[26px] pb-[24px] pt-[20px] ${className}`}
     >
-      <p className="text-[18px] font-semibold text-[#727785]">{title}</p>
+      <p className="text-[18px] font-semibold text-foreground-subtle">{title}</p>
       {children}
     </div>
   );
@@ -44,7 +44,7 @@ function Box({ placeholder, className = "" }: { placeholder: string; className?:
     <div
       className={`flex items-center justify-center rounded-[10px] border-2 border-border-subtle px-[14px] py-[10px] ${className}`}
     >
-      <span className="text-[16px] font-semibold text-[#c1c6d6]">{placeholder}</span>
+      <span className="text-[16px] font-semibold text-input">{placeholder}</span>
     </div>
   );
 }
@@ -53,7 +53,7 @@ function Box({ placeholder, className = "" }: { placeholder: string; className?:
 function TimeRow({ label }: { label: string }) {
   return (
     <div className="flex w-full flex-col gap-[10px]">
-      <p className="text-[14px] font-medium text-[#727785]">{label}</p>
+      <p className="text-[14px] font-medium text-foreground-subtle">{label}</p>
       <div className="flex w-full gap-[12px]">
         {TIME_FIELDS.map((f) => (
           <Box key={f} placeholder={f} className="flex-1" />
@@ -73,12 +73,12 @@ export function SessionEditModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(25,28,29,0.4)] p-[40px]"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-[40px]"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="flex w-[700px] max-w-full flex-col gap-[14px] rounded-[22px] bg-[#f3f4f5] px-[40px] py-[30px]"
+        className="flex w-[700px] max-w-full flex-col gap-[14px] rounded-[22px] bg-surface-sunken px-[40px] py-[30px]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

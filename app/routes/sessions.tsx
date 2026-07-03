@@ -80,7 +80,7 @@ export default function Sessions() {
               </button>
             </div>
 
-            <div className="flex flex-1 flex-col gap-[24px] rounded-[22px] bg-[#f3f4f5] p-[18px]">
+            <div className="flex flex-1 flex-col gap-[24px] rounded-[22px] bg-surface-sunken p-[18px]">
               {SESSIONS.map((session, i) => (
                 <SessionCard
                   key={`${session.date}-${session.title}`}

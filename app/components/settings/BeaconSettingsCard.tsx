@@ -37,9 +37,9 @@ export function BeaconSettingsCard({
             </span>
             <div className="flex flex-col">
               <div className="flex h-[44px] items-center">
-                <div className="h-[16px] w-[414px] overflow-hidden rounded-full bg-[#dbdbdb]">
+                <div className="h-[16px] w-[414px] overflow-hidden rounded-full bg-border-subtle">
                   <div
-                    className="h-full rounded-full bg-[rgba(26,115,232,0.5)]"
+                    className="h-full rounded-full bg-primary-hover/50"
                     style={{ width: `${signalPercent}%` }}
                   />
                 </div>
@@ -52,7 +52,7 @@ export function BeaconSettingsCard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-[50px] rounded-[22px] bg-[#f3f4f5] p-[40px]">
+        <div className="flex flex-col gap-[50px] rounded-[22px] bg-surface-sunken p-[40px]">
           <SettingsField
             label="지각 시간 기준"
             placeholder="분"

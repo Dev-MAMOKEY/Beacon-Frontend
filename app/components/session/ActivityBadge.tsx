@@ -1,10 +1,10 @@
 export type ActivityCategory = "동아리" | "프로젝트" | "회의";
 
-/** 카테고리별 배경·글자 색. Figma(169:502~504). */
+/** 카테고리별 배경·글자 색(테마 토큰 + 불투명도). Figma(169:502~504). */
 const CATEGORY_STYLE: Record<ActivityCategory, string> = {
-  동아리: "bg-[rgba(0,91,191,0.2)] text-[#1a73e8]",
-  프로젝트: "bg-[rgba(255,219,203,0.3)] text-[#ff894d]",
-  회의: "bg-[rgba(160,126,255,0.5)] text-[#7645ff]",
+  동아리: "bg-primary/20 text-primary-hover",
+  프로젝트: "bg-accent-project/20 text-accent-project",
+  회의: "bg-accent-meeting/30 text-accent-meeting",
 };
 
 type Props = {

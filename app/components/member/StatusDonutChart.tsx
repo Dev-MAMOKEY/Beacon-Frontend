@@ -10,12 +10,12 @@ type Props = {
   segments?: Segment[];
 };
 
-/** Figma(186:1235~): 출석 #0fa245, 지각 #fbbf24, 결석 #ba1a1a, 기타 #dae2fd. */
+/** 상태별 색상(테마 토큰 CSS 변수). 출석/지각/결석/기타. */
 const DEFAULT_SEGMENTS: Segment[] = [
-  { label: "출석", color: "#0fa245", value: 80 },
-  { label: "지각", color: "#fbbf24", value: 8 },
-  { label: "결석", color: "#ba1a1a", value: 6 },
-  { label: "기타", color: "#dae2fd", value: 6 },
+  { label: "출석", color: "var(--color-success)", value: 80 },
+  { label: "지각", color: "var(--color-warning)", value: 8 },
+  { label: "결석", color: "var(--color-destructive)", value: 6 },
+  { label: "기타", color: "var(--color-status-other)", value: 6 },
 ];
 
 const R = 80;
@@ -51,7 +51,7 @@ export function StatusDonutChart({
                 cy={105}
                 r={R}
                 fill="none"
-                stroke={s.color}
+                style={{ stroke: s.color }}
                 strokeWidth={STROKE}
                 strokeDasharray={`${dash} ${C - dash}`}
                 strokeDashoffset={-offset}

@@ -24,7 +24,7 @@ export function MemberRanking({
         <h2 className="text-[24px] font-semibold text-foreground-muted">
           {title}
         </h2>
-        <span className="text-[16px] font-medium text-[#94a3b8]">
+        <span className="text-[16px] font-medium text-foreground-subtle">
           {sortLabel}
         </span>
       </div>

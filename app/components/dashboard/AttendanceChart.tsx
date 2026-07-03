@@ -2,9 +2,9 @@ import { ChevronDown } from "lucide-react";
 
 type Series = {
   label: string;
-  /** 범례 색상 클래스 (예: "bg-[#16a34a]"). */
+  /** 범례 색상 클래스 (예: "bg-success"). */
   colorClassName: string;
-  /** 라인 색상 (SVG stroke, 예: "#16a34a"). */
+  /** 라인 색상 (SVG stroke). 테마 토큰 CSS 변수 사용. */
   stroke: string;
   /** 주차별 값 (0~100). */
   points: number[];
@@ -22,26 +22,26 @@ const DEFAULT_WEEKS = ["1주차", "2주차", "3주차", "4주차"];
 const DEFAULT_SERIES: Series[] = [
   {
     label: "출석",
-    colorClassName: "bg-[#16a34a]",
-    stroke: "#16a34a",
+    colorClassName: "bg-success",
+    stroke: "var(--color-success)",
     points: [12, 18, 10, 16],
   },
   {
     label: "지각",
-    colorClassName: "bg-[#fbbf24]",
-    stroke: "#fbbf24",
+    colorClassName: "bg-warning",
+    stroke: "var(--color-warning)",
     points: [8, 10, 9, 14],
   },
   {
     label: "결석",
     colorClassName: "bg-destructive",
-    stroke: "#ba1a1a",
+    stroke: "var(--color-destructive)",
     points: [6, 5, 7, 4],
   },
   {
     label: "기타",
-    colorClassName: "bg-[#dae2fd]",
-    stroke: "#dae2fd",
+    colorClassName: "bg-status-other",
+    stroke: "var(--color-status-other)",
     points: [3, 4, 3, 5],
   },
 ];
@@ -101,7 +101,7 @@ export function AttendanceChart({
                 key={s.label}
                 points={toPolyline(s.points)}
                 fill="none"
-                stroke={s.stroke}
+                style={{ stroke: s.stroke }}
                 strokeWidth={2}
                 vectorEffect="non-scaling-stroke"
                 strokeLinejoin="round"
