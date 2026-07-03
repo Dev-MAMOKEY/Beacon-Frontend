@@ -4,6 +4,7 @@ import { SideNavBar } from "~/components/layout/SideNavBar";
 import { ClubInfoCard } from "~/components/settings/ClubInfoCard";
 import { CodeGenerationCard } from "~/components/settings/CodeGenerationCard";
 import { BeaconSettingsCard } from "~/components/settings/BeaconSettingsCard";
+import { CreateClubCard } from "~/components/settings/CreateClubCard";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,6 +24,8 @@ export default function Settings() {
             <h1 className="pl-[8px] text-[26px] font-bold text-foreground-subtle">
               설정
             </h1>
+
+            <CreateClubCard />
 
             <div className="flex items-stretch gap-[32px]">
               <ClubInfoCard />
