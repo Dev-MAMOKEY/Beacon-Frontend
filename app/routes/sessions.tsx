@@ -9,7 +9,7 @@ import { SessionCard } from "~/components/session/SessionCard";
 import { SessionEditModal } from "~/components/session/SessionEditModal";
 import { useSessions } from "~/hooks/use-sessions";
 import { useActiveClub } from "~/hooks/use-active-club";
-import { ApiError, sessionsApi } from "~/lib/api";
+import { ApiError, type Session, sessionsApi } from "~/lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -28,8 +28,22 @@ export default function Sessions() {
   const { activeClubId } = useActiveClub();
   const { sessions, loading, error, reload } = useSessions();
   const [editOpen, setEditOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Session | null>(null);
+  const [repeatDefault, setRepeatDefault] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  function openCreate(repeat: boolean) {
+    setEditTarget(null);
+    setRepeatDefault(repeat);
+    setEditOpen(true);
+  }
+
+  function openEdit(session: Session) {
+    setEditTarget(session);
+    setRepeatDefault(false);
+    setEditOpen(true);
+  }
 
   async function runAction(id: number, fn: (clubId: number) => Promise<unknown>) {
     if (activeClubId === null) return;
@@ -66,14 +80,14 @@ export default function Sessions() {
             <div className="flex flex-col gap-[24px]">
               <button
                 type="button"
-                onClick={() => setEditOpen(true)}
+                onClick={() => openCreate(false)}
                 className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
               >
                 <Plus className="size-[16px]" />새 세션 만들기
               </button>
               <button
                 type="button"
-                onClick={() => setEditOpen(true)}
+                onClick={() => openCreate(true)}
                 className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-primary px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
               >
                 <Repeat className="size-[18px]" />
@@ -106,7 +120,7 @@ export default function Sessions() {
                   session={s}
                   className={DIM[i] ?? "opacity-60"}
                   busy={busyId === s.id}
-                  onEdit={() => setEditOpen(true)}
+                  onEdit={() => openEdit(s)}
                   onStart={() =>
                     s.id != null &&
                     runAction(s.id, (c) => sessionsApi.startSession(c, s.id!))
@@ -126,7 +140,14 @@ export default function Sessions() {
         </main>
       </div>
 
-      <SessionEditModal open={editOpen} onClose={() => setEditOpen(false)} />
+      <SessionEditModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        clubId={activeClubId}
+        session={editTarget}
+        repeatDefault={repeatDefault}
+        onSaved={reload}
+      />
     </div>
   );
 }

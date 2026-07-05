@@ -31,3 +31,23 @@ export function toLocalYmd(
   if (Number.isNaN(d.getTime())) return null;
   return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
 }
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** ISO → datetime-local 입력값 "YYYY-MM-DDTHH:mm"(로컬). */
+export function isoToLocalInput(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours(),
+  )}:${pad(d.getMinutes())}`;
+}
+
+/** datetime-local 입력값(로컬) → ISO(UTC). 무효면 null. */
+export function localInputToIso(local: string): string | null {
+  if (!local) return null;
+  const d = new Date(local);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
