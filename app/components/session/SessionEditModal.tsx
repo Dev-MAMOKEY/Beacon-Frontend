@@ -1,75 +1,130 @@
 import { X } from "lucide-react";
-import type { ReactNode } from "react";
-import { ActivityBadge } from "./ActivityBadge";
+import { type FormEvent, type ReactNode, useEffect, useState } from "react";
+import {
+  ApiError,
+  type Session,
+  type SessionCreateRequestDto,
+  sessionsApi,
+} from "~/lib/api";
+import { isoToLocalInput, localInputToIso } from "~/lib/datetime";
+
+type DayOfWeek = NonNullable<SessionCreateRequestDto["dayOfWeek"]>;
+
+const DAYS: { value: DayOfWeek; label: string }[] = [
+  { value: "MONDAY", label: "월" },
+  { value: "TUESDAY", label: "화" },
+  { value: "WEDNESDAY", label: "수" },
+  { value: "THURSDAY", label: "목" },
+  { value: "FRIDAY", label: "금" },
+  { value: "SATURDAY", label: "토" },
+  { value: "SUNDAY", label: "일" },
+];
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  /** 활성 clubId. null이면 저장 불가. */
+  clubId: number | null;
+  /** 있으면 수정 모드(반복 옵션 없음). */
+  session?: Session | null;
+  /** 생성 시 반복 기본값(반복 세션 만들기 버튼). */
+  repeatDefault?: boolean;
+  /** 저장 성공 시(목록 갱신). */
+  onSaved?: () => void;
 };
 
-const TIME_FIELDS = ["오후", "시", "분"];
-const REPEAT_DAYS = [
-  "월요일",
-  "화요일",
-  "수요일",
-  "목요일",
-  "금요일",
-  "토요일",
-  "일요일",
-];
-
-/** 흰 카드 섹션. 모달 내부 그룹 공통 스타일. */
-function Section({
-  title,
-  children,
-  className = "",
-}: {
-  title: string;
-  children: ReactNode;
-  className?: string;
-}) {
+/** 흰 카드 섹션. */
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div
-      className={`flex flex-col gap-[12px] rounded-[20px] bg-surface px-[26px] pb-[24px] pt-[20px] ${className}`}
-    >
+    <div className="flex flex-1 flex-col gap-[12px] rounded-[20px] bg-surface px-[26px] pb-[24px] pt-[20px]">
       <p className="text-[18px] font-semibold text-foreground-subtle">{title}</p>
       {children}
     </div>
   );
 }
 
-/** 입력/선택 박스(플레이스홀더). API 연동 전까지 표시 전용. */
-function Box({ placeholder, className = "" }: { placeholder: string; className?: string }) {
-  return (
-    <div
-      className={`flex items-center justify-center rounded-[10px] border-2 border-border-subtle px-[14px] py-[10px] ${className}`}
-    >
-      <span className="text-[16px] font-semibold text-input">{placeholder}</span>
-    </div>
-  );
-}
-
-/** 시작/종료 시각 선택 행 (오후·시·분). */
-function TimeRow({ label }: { label: string }) {
-  return (
-    <div className="flex w-full flex-col gap-[10px]">
-      <p className="text-[14px] font-medium text-foreground-subtle">{label}</p>
-      <div className="flex w-full gap-[12px]">
-        {TIME_FIELDS.map((f) => (
-          <Box key={f} placeholder={f} className="flex-1" />
-        ))}
-      </div>
-    </div>
-  );
-}
+const inputCls =
+  "rounded-[10px] border-2 border-input bg-transparent px-[16px] py-[10px] text-[16px] text-foreground focus:border-primary focus:outline-none";
 
 /**
- * 세션 수정 모달.
- * Figma(182:586): 제목/내용 · 날짜 · 시간 · 반복(요일) · 활동 선택 · 완료하기.
- * open=false면 렌더하지 않는다. 배경 클릭·X로 닫힘.
+ * 세션 생성/수정 모달.
+ * session이 있으면 수정(updateSession), 없으면 생성(createSession, 반복 지원).
  */
-export function SessionEditModal({ open, onClose }: Props) {
+export function SessionEditModal({
+  open,
+  onClose,
+  clubId,
+  session = null,
+  repeatDefault = false,
+  onSaved,
+}: Props) {
+  const isEdit = session != null;
+  const [sessionName, setSessionName] = useState("");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>("MONDAY");
+  const [repeatEndDate, setRepeatEndDate] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 열릴 때 초기화(수정=기존 값, 생성=빈 값 + 반복 기본).
+  useEffect(() => {
+    if (!open) return;
+    setError(null);
+    setSessionName(session?.sessionName ?? "");
+    setStart(isoToLocalInput(session?.expectStartAt));
+    setEnd(isoToLocalInput(session?.expectEndAt));
+    setIsRepeat(repeatDefault);
+    setDayOfWeek("MONDAY");
+    setRepeatEndDate("");
+  }, [open, session, repeatDefault]);
+
   if (!open) return null;
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+
+    if (!sessionName.trim()) return setError("세션 이름을 입력해주세요.");
+    const startIso = localInputToIso(start);
+    const endIso = localInputToIso(end);
+    if (!startIso || !endIso) return setError("시작·종료 시간을 입력해주세요.");
+    if (new Date(startIso) >= new Date(endIso))
+      return setError("종료 시간은 시작 시간 이후여야 합니다.");
+    if (clubId === null) return setError("활성 동아리가 없습니다.");
+    if (isEdit && session?.id == null)
+      return setError("세션 정보를 찾을 수 없습니다.");
+
+    setSubmitting(true);
+    try {
+      if (isEdit && session?.id != null) {
+        await sessionsApi.updateSession(clubId, session.id, {
+          sessionName: sessionName.trim(),
+          expectStartAt: startIso,
+          expectEndAt: endIso,
+        });
+      } else {
+        const body: SessionCreateRequestDto = {
+          sessionName: sessionName.trim(),
+          expectStartAt: startIso,
+          expectEndAt: endIso,
+        };
+        if (isRepeat) {
+          body.isRepeat = true;
+          body.dayOfWeek = dayOfWeek;
+          if (repeatEndDate) body.repeatEndDate = repeatEndDate;
+        }
+        await sessionsApi.createSession(clubId, body);
+      }
+      onSaved?.();
+      onClose();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "저장에 실패했습니다.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div
@@ -77,15 +132,16 @@ export function SessionEditModal({ open, onClose }: Props) {
       onClick={onClose}
       role="presentation"
     >
-      <div
-        className="flex w-[700px] max-w-full flex-col gap-[14px] rounded-[22px] bg-surface-sunken px-[40px] py-[30px]"
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-[560px] max-w-full flex-col gap-[14px] rounded-[22px] bg-surface-sunken px-[40px] py-[30px]"
         onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-label="세션 수정"
+        aria-label={isEdit ? "세션 수정" : "세션 생성"}
       >
         <div className="flex w-full items-center justify-between">
-          <h2 className="text-[26px] font-semibold text-foreground">세션 수정</h2>
+          <h2 className="text-[26px] font-semibold text-foreground">
+            {isEdit ? "세션 수정" : "세션 생성"}
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -96,52 +152,92 @@ export function SessionEditModal({ open, onClose }: Props) {
           </button>
         </div>
 
-        <Section title="제목 및 내용">
-          <Box placeholder="제목을 입력하세요" className="w-full justify-start" />
-          <Box placeholder="내용을 입력하세요" className="w-full justify-start" />
+        <Section title="세션 이름">
+          <input
+            className={inputCls}
+            placeholder="예: 3월 20일 정기모임"
+            value={sessionName}
+            onChange={(e) => setSessionName(e.target.value)}
+            disabled={submitting}
+          />
         </Section>
 
-        <div className="flex w-full gap-[20px]">
-          <Section title="날짜" className="flex-1">
-            <TimeRow label="시작" />
-            <TimeRow label="종료" />
+        <div className="flex w-full gap-[14px]">
+          <Section title="시작">
+            <input
+              type="datetime-local"
+              className={inputCls}
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
+              disabled={submitting}
+            />
           </Section>
-          <Section title="시간" className="flex-1">
-            <TimeRow label="시작" />
-            <TimeRow label="종료" />
+          <Section title="종료">
+            <input
+              type="datetime-local"
+              className={inputCls}
+              value={end}
+              onChange={(e) => setEnd(e.target.value)}
+              disabled={submitting}
+            />
           </Section>
         </div>
 
-        <Section title="반복">
-          <div className="flex flex-col gap-[10px]">
-            <div className="flex w-full gap-[10px]">
-              <Box placeholder="매주" className="flex-1" />
-              <Box placeholder="매일" className="flex-1" />
-            </div>
-            <div className="flex w-full gap-[12px]">
-              {REPEAT_DAYS.map((d) => (
-                <Box key={d} placeholder={d} className="flex-1" />
-              ))}
-            </div>
-          </div>
-        </Section>
+        {!isEdit && (
+          <Section title="반복">
+            <label className="flex items-center gap-[10px] text-[16px] font-medium text-foreground">
+              <input
+                type="checkbox"
+                checked={isRepeat}
+                onChange={(e) => setIsRepeat(e.target.checked)}
+                disabled={submitting}
+              />
+              매주 반복
+            </label>
+            {isRepeat && (
+              <div className="flex flex-wrap items-center gap-[12px]">
+                <div className="flex gap-[6px]">
+                  {DAYS.map((d) => (
+                    <button
+                      key={d.value}
+                      type="button"
+                      onClick={() => setDayOfWeek(d.value)}
+                      disabled={submitting}
+                      className={`size-[40px] rounded-full text-[15px] font-semibold transition-colors ${
+                        dayOfWeek === d.value
+                          ? "bg-primary text-white"
+                          : "bg-border-subtle text-foreground-subtle"
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="date"
+                  aria-label="반복 종료일"
+                  className={inputCls}
+                  value={repeatEndDate}
+                  onChange={(e) => setRepeatEndDate(e.target.value)}
+                  disabled={submitting}
+                />
+              </div>
+            )}
+          </Section>
+        )}
 
-        <Section title="활동 선택">
-          <div className="flex items-center gap-[24px]">
-            <ActivityBadge category="동아리" />
-            <ActivityBadge category="프로젝트" />
-            <ActivityBadge category="회의" />
-          </div>
-        </Section>
+        {error && (
+          <p className="text-[14px] font-medium text-destructive">{error}</p>
+        )}
 
         <button
-          type="button"
-          onClick={onClose}
-          className="w-full rounded-[16px] bg-border-subtle px-[26px] py-[14px] text-[18px] font-medium text-foreground-subtle transition-opacity hover:opacity-90"
+          type="submit"
+          disabled={submitting}
+          className="w-full rounded-[16px] bg-primary px-[26px] py-[14px] text-[18px] font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
-          완료하기
+          {submitting ? "저장 중..." : isEdit ? "수정 완료" : "생성하기"}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
