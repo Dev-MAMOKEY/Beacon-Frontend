@@ -4,7 +4,7 @@ import { SideNavBar } from "~/components/layout/SideNavBar";
 import { ClubInfoCard } from "~/components/settings/ClubInfoCard";
 import { CodeGenerationCard } from "~/components/settings/CodeGenerationCard";
 import { BeaconSettingsCard } from "~/components/settings/BeaconSettingsCard";
-import { CreateClubCard } from "~/components/settings/CreateClubCard";
+import { useActiveClub } from "~/hooks/use-active-club";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,6 +14,8 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Settings() {
+  const { activeClubId, loading } = useActiveClub();
+
   return (
     <div className="flex min-h-screen">
       <SideNavBar />
@@ -25,14 +27,25 @@ export default function Settings() {
               설정
             </h1>
 
-            <CreateClubCard />
-
-            <div className="flex items-stretch gap-[32px]">
-              <ClubInfoCard />
-              <CodeGenerationCard />
-            </div>
-
-            <BeaconSettingsCard />
+            {loading ? null : activeClubId === null ? (
+              <div className="flex flex-col items-center gap-[12px] rounded-[20px] bg-surface px-[50px] py-[60px] text-center">
+                <p className="text-[20px] font-semibold text-foreground">
+                  소속된 동아리가 없습니다
+                </p>
+                <p className="text-[16px] font-medium text-foreground-subtle">
+                  관리자에게 문의하거나 모바일 앱에서 초대코드로 동아리에
+                  가입해주세요.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-stretch gap-[32px]">
+                  <ClubInfoCard />
+                  <CodeGenerationCard />
+                </div>
+                <BeaconSettingsCard />
+              </>
+            )}
           </div>
         </main>
       </div>
