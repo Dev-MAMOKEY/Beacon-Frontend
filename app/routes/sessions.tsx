@@ -5,8 +5,11 @@ import { AppHeader } from "~/components/layout/AppHeader";
 import { SideNavBar } from "~/components/layout/SideNavBar";
 import { PageHeading } from "~/components/dashboard/PageHeading";
 import { SessionCalendar } from "~/components/session/SessionCalendar";
-import { SessionCard, type Session } from "~/components/session/SessionCard";
+import { SessionCard } from "~/components/session/SessionCard";
 import { SessionEditModal } from "~/components/session/SessionEditModal";
+import { useSessions } from "~/hooks/use-sessions";
+import { useActiveClub } from "~/hooks/use-active-club";
+import { ApiError, sessionsApi } from "~/lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,36 +18,34 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-const SESSIONS: Session[] = [
-  {
-    date: "5월 14일",
-    time: "PM 03:00",
-    category: "프로젝트",
-    title: "아이디어톤 제출일",
-    location: "팀 마모키",
-    isToday: true,
-  },
-  {
-    date: "5월 18일",
-    time: "PM 06:20",
-    category: "동아리",
-    title: "10주차 정기 모임",
-    location: "기도관 2110",
-  },
-  {
-    date: "5월 22일",
-    time: "PM 10:00",
-    category: "회의",
-    title: "프로젝트 회의",
-    location: "디스코드",
-  },
-];
+const TODAY = new Date();
+const TODAY_LABEL = `${TODAY.getFullYear()}년 ${TODAY.getMonth() + 1}월 ${TODAY.getDate()}일`;
 
 /** 최신 항목일수록 진하고, 이후 항목은 흐려진다. Figma(169:380). */
-const DIM = ["opacity-100", "opacity-50", "opacity-30"];
+const DIM = ["opacity-100", "opacity-80", "opacity-60"];
 
 export default function Sessions() {
+  const { activeClubId } = useActiveClub();
+  const { sessions, loading, error, reload } = useSessions();
   const [editOpen, setEditOpen] = useState(false);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  async function runAction(id: number, fn: (clubId: number) => Promise<unknown>) {
+    if (activeClubId === null) return;
+    setBusyId(id);
+    setActionError(null);
+    try {
+      await fn(activeClubId);
+      reload();
+    } catch (err) {
+      setActionError(
+        err instanceof ApiError ? err.message : "작업에 실패했습니다.",
+      );
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -55,10 +56,10 @@ export default function Sessions() {
           <div className="flex min-w-0 flex-1 flex-col gap-[32px]">
             <PageHeading
               title="세션 관리"
-              date="2026년 5월 16일"
+              date={TODAY_LABEL}
               titleClassName="text-foreground-subtle"
             />
-            <SessionCalendar />
+            <SessionCalendar sessions={sessions} />
           </div>
 
           <div className="flex w-[333px] shrink-0 flex-col gap-[34px]">
@@ -81,12 +82,43 @@ export default function Sessions() {
             </div>
 
             <div className="flex flex-1 flex-col gap-[24px] rounded-[22px] bg-surface-sunken p-[18px]">
-              {SESSIONS.map((session, i) => (
+              {error && (
+                <p className="text-[15px] font-medium text-destructive">{error}</p>
+              )}
+              {actionError && (
+                <p className="text-[15px] font-medium text-destructive">
+                  {actionError}
+                </p>
+              )}
+              {loading && (
+                <p className="text-[15px] font-medium text-foreground-subtle">
+                  불러오는 중...
+                </p>
+              )}
+              {!loading && !error && sessions.length === 0 && (
+                <p className="text-[15px] font-medium text-foreground-subtle">
+                  세션이 없습니다. 새 세션을 만들어보세요.
+                </p>
+              )}
+              {sessions.map((s, i) => (
                 <SessionCard
-                  key={`${session.date}-${session.title}`}
-                  {...session}
-                  className={DIM[i] ?? "opacity-30"}
+                  key={s.id ?? i}
+                  session={s}
+                  className={DIM[i] ?? "opacity-60"}
+                  busy={busyId === s.id}
                   onEdit={() => setEditOpen(true)}
+                  onStart={() =>
+                    s.id != null &&
+                    runAction(s.id, (c) => sessionsApi.startSession(c, s.id!))
+                  }
+                  onEnd={() =>
+                    s.id != null &&
+                    runAction(s.id, (c) => sessionsApi.endSession(c, s.id!))
+                  }
+                  onDelete={() =>
+                    s.id != null &&
+                    runAction(s.id, (c) => sessionsApi.deleteSession(c, s.id!))
+                  }
                 />
               ))}
             </div>
