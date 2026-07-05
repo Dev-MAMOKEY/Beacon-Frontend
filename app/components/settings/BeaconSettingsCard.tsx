@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SettingsField } from "./SettingsField";
+import { useActiveClub } from "~/hooks/use-active-club";
+import { getClubUuid } from "~/lib/club/active-club";
 
 type Props = {
   /** RSSI 표시값 (예: "-70dBm"). */
@@ -18,9 +20,16 @@ export function BeaconSettingsCard({
   rssi = "-70dBm",
   signalPercent = 94,
 }: Props) {
+  const { activeClubId } = useActiveClub();
   const [uuid, setUuid] = useState("");
   const [lateThreshold, setLateThreshold] = useState("");
   const [rssiStabilization, setRssiStabilization] = useState("");
+
+  // 생성 시 저장된 동아리 고정 UUID가 있으면 읽기 전용으로 표시.
+  const storedUuid = activeClubId !== null ? getClubUuid(activeClubId) : null;
+  useEffect(() => {
+    if (storedUuid) setUuid(storedUuid);
+  }, [storedUuid]);
 
   return (
     <div className="flex flex-1 flex-col gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
@@ -34,6 +43,7 @@ export function BeaconSettingsCard({
             className="w-full"
             value={uuid}
             onChange={(e) => setUuid(e.target.value)}
+            readOnly={storedUuid !== null}
           />
 
           <div className="flex flex-col gap-[14px]">

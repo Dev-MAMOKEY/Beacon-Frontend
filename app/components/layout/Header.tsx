@@ -1,4 +1,5 @@
 import { Bell } from "lucide-react";
+import type { ReactNode } from "react";
 import { IconButton } from "~/components/ui/IconButton";
 import { SearchInput } from "~/components/ui/SearchInput";
 import { UserProfile } from "~/components/user/UserProfile";
@@ -11,6 +12,8 @@ type Props = {
     avatarSrc?: string;
   };
   searchPlaceholder?: string;
+  /** 우측 프로필 좌측에 노출할 동아리 스위처 등 슬롯. */
+  clubSwitcher?: ReactNode;
 };
 
 /**
@@ -21,12 +24,14 @@ type Props = {
 export function Header({
   user,
   searchPlaceholder = "검색어를 입력하세요",
+  clubSwitcher,
 }: Props) {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between bg-surface px-[30px] pb-[14px] pt-[20px]">
       <SearchInput placeholder={searchPlaceholder} />
 
       <div className="flex items-center gap-[26px]">
+        {clubSwitcher}
         <UserProfile
           name={user.name}
           role={user.role}
