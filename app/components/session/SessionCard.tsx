@@ -1,7 +1,7 @@
 import type { Session } from "~/lib/api";
 import { formatAmPmTime, formatMonthDay } from "~/lib/datetime";
 
-type SessionStatus = NonNullable<Session["sessionStatus"]>;
+type SessionStatus = NonNullable<Session["status"]>;
 
 /** 상태 배지 라벨/색(테마 토큰). */
 const STATUS_BADGE: Record<SessionStatus, { label: string; className: string }> =
@@ -37,7 +37,7 @@ export function SessionCard({
   onEnd,
   onDelete,
 }: Props) {
-  const status: SessionStatus = session.sessionStatus ?? "SCHEDULED";
+  const status: SessionStatus = session.status ?? "SCHEDULED";
   const badge = STATUS_BADGE[status];
 
   const btn =
