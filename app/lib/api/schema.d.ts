@@ -683,8 +683,7 @@ export interface components {
             timestamp?: string;
         };
         SignupRequest: {
-            /** Format: int32 */
-            stdId: number;
+            stdId: string;
             password: string;
             name: string;
         };
@@ -698,8 +697,7 @@ export interface components {
         SignupResponse: {
             /** Format: int64 */
             id?: number;
-            /** Format: int32 */
-            studentId?: number;
+            studentId?: string;
             name?: string;
         };
         ReissueTokenRequest: {
@@ -717,8 +715,7 @@ export interface components {
             refreshToken?: string;
         };
         LoginRequest: {
-            /** Format: int32 */
-            stdId: number;
+            stdId: string;
             password: string;
         };
         MemberProfileUpdateRequest: {
@@ -728,8 +725,7 @@ export interface components {
         MemberProfileResponse: {
             name?: string;
             clubIds?: number[];
-            /** Format: int32 */
-            stdId?: number;
+            stdId?: string;
             pushEnabled?: boolean;
         };
         RsDataMemberProfileResponse: {
@@ -768,13 +764,6 @@ export interface components {
             targetMemberId?: number;
             /** @enum {string} */
             newRole?: "ADMIN" | "MEMBER";
-        };
-        RsData: {
-            success?: boolean;
-            data?: unknown;
-            error?: components["schemas"]["ErrorInfo"];
-            /** Format: date-time */
-            timestamp?: string;
         };
         ClubResponseDto: {
             /** Format: int64 */
@@ -818,8 +807,7 @@ export interface components {
             /** Format: int64 */
             memberId?: number;
             name?: string;
-            /** Format: int32 */
-            stdId?: number;
+            stdId?: string;
             /** Format: int64 */
             totalSessions?: number;
             /** Format: int64 */
@@ -864,48 +852,10 @@ export interface components {
             /** Format: date-time */
             timestamp?: string;
         };
-        Club: {
-            /** Format: int64 */
-            id?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-            /** Format: date-time */
-            deletedAt?: string;
-            clubName?: string;
-            clubDescription?: string;
-            isDeleted?: boolean;
-            fixed_uuid?: string;
-            psk?: string;
-            dealeted?: boolean;
-        };
-        Member: {
-            /** Format: int64 */
-            id?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-            /** Format: date-time */
-            deletedAt?: string;
-            /** Format: int32 */
-            stdId?: number;
-            /** Format: int32 */
-            grade?: number;
-            password?: string;
-            name?: string;
-            fcmToken?: string;
-            pushEnabled?: boolean;
-            refreshToken?: string;
-            /** Format: date-time */
-            rtAt?: string;
-            dealeted?: boolean;
-        };
         PageableObject: {
-            unpaged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageSize?: number;
@@ -913,23 +863,19 @@ export interface components {
             offset?: number;
             sort?: components["schemas"]["SortObject"];
         };
-        RsDataSliceSession: {
+        RsDataSliceSessionResponseDto: {
             success?: boolean;
-            data?: components["schemas"]["SliceSession"];
+            data?: components["schemas"]["SliceSessionResponseDto"];
             error?: components["schemas"]["ErrorInfo"];
             /** Format: date-time */
             timestamp?: string;
         };
-        Session: {
+        SessionResponseDto: {
             /** Format: int64 */
-            id?: number;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-            /** Format: date-time */
-            deletedAt?: string;
+            sessionId?: number;
             sessionName?: string;
+            /** @enum {string} */
+            status?: "SCHEDULED" | "ACTIVE" | "ENDED";
             /** Format: date-time */
             expectStartAt?: string;
             /** Format: date-time */
@@ -938,15 +884,8 @@ export interface components {
             startAt?: string;
             /** Format: date-time */
             endAt?: string;
-            uuid?: string;
-            otpCode?: string;
-            /** @enum {string} */
-            sessionStatus?: "SCHEDULED" | "ACTIVE" | "ENDED";
-            member?: components["schemas"]["Member"];
-            club?: components["schemas"]["Club"];
-            dealeted?: boolean;
         };
-        SliceSession: {
+        SliceSessionResponseDto: {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
@@ -954,7 +893,7 @@ export interface components {
             last?: boolean;
             /** Format: int32 */
             size?: number;
-            content?: components["schemas"]["Session"][];
+            content?: components["schemas"]["SessionResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
@@ -965,9 +904,9 @@ export interface components {
             sorted?: boolean;
             empty?: boolean;
         };
-        RsDataSession: {
+        RsDataSessionResponseDto: {
             success?: boolean;
-            data?: components["schemas"]["Session"];
+            data?: components["schemas"]["SessionResponseDto"];
             error?: components["schemas"]["ErrorInfo"];
             /** Format: date-time */
             timestamp?: string;
@@ -978,8 +917,7 @@ export interface components {
             /** Format: int64 */
             memberId?: number;
             memberName?: string;
-            /** Format: int32 */
-            stdId?: number;
+            stdId?: string;
             /** @enum {string} */
             attendanceStatus?: "PRESENT" | "ABSENT" | "ETC" | "LATE";
             /** Format: date-time */
@@ -1007,6 +945,23 @@ export interface components {
             number?: number;
             sort?: components["schemas"]["SortObject"];
             empty?: boolean;
+        };
+        ClubMemberResponse: {
+            /** Format: int64 */
+            memberId?: number;
+            name?: string;
+            stdId?: string;
+            /** @enum {string} */
+            role?: "ADMIN" | "MEMBER";
+            /** Format: double */
+            rate?: number;
+        };
+        RsDataListClubMemberResponse: {
+            success?: boolean;
+            data?: components["schemas"]["ClubMemberResponse"][];
+            error?: components["schemas"]["ErrorInfo"];
+            /** Format: date-time */
+            timestamp?: string;
         };
         AttendanceRecordItem: {
             /** Format: int64 */
@@ -1049,8 +1004,7 @@ export interface components {
         };
         ExportItem: {
             memberName?: string;
-            /** Format: int32 */
-            stdId?: number;
+            stdId?: string;
             sessionName?: string;
             /** Format: date */
             date?: string;
@@ -1098,7 +1052,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RsDataSliceSession"];
+                    "*/*": components["schemas"]["RsDataSliceSessionResponseDto"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */
@@ -2501,7 +2455,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RsDataSession"];
+                    "*/*": components["schemas"]["RsDataSessionResponseDto"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */
@@ -2798,7 +2752,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RsData"];
+                    "*/*": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */
@@ -3033,7 +2987,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RsDataSession"];
+                    "*/*": components["schemas"]["RsDataSessionResponseDto"];
                 };
             };
             /** @description 현재 활성화된 세션이 없는 경우 */
@@ -3095,7 +3049,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RsData"];
+                    "*/*": components["schemas"]["RsDataListClubMemberResponse"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */
@@ -3243,7 +3197,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RsData"];
+                    "*/*": components["schemas"]["RsDataVoid"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */

@@ -93,13 +93,13 @@ export function SessionEditModal({
     if (new Date(startIso) >= new Date(endIso))
       return setError("종료 시간은 시작 시간 이후여야 합니다.");
     if (clubId === null) return setError("활성 동아리가 없습니다.");
-    if (isEdit && session?.id == null)
+    if (isEdit && session?.sessionId == null)
       return setError("세션 정보를 찾을 수 없습니다.");
 
     setSubmitting(true);
     try {
-      if (isEdit && session?.id != null) {
-        await sessionsApi.updateSession(clubId, session.id, {
+      if (isEdit && session?.sessionId != null) {
+        await sessionsApi.updateSession(clubId, session.sessionId, {
           sessionName: sessionName.trim(),
           expectStartAt: startIso,
           expectEndAt: endIso,
