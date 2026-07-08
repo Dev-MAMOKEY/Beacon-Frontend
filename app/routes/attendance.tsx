@@ -38,9 +38,9 @@ export default function Attendance() {
       return;
     }
     setSessionId((cur) => {
-      if (cur !== null && sessions.some((s) => s.id === cur)) return cur;
-      const active = sessions.find((s) => s.sessionStatus === "ACTIVE");
-      return active?.id ?? sessions[0].id ?? null;
+      if (cur !== null && sessions.some((s) => s.sessionId === cur)) return cur;
+      const active = sessions.find((s) => s.status === "ACTIVE");
+      return active?.sessionId ?? sessions[0].sessionId ?? null;
     });
   }, [sessions]);
 
@@ -103,7 +103,7 @@ export default function Attendance() {
             >
               {sessions.length === 0 && <option value="">세션 없음</option>}
               {sessions.map((s) => (
-                <option key={s.id} value={s.id}>
+                <option key={s.sessionId} value={s.sessionId}>
                   {formatMonthDay(s.expectStartAt)} · {s.sessionName}
                 </option>
               ))}
