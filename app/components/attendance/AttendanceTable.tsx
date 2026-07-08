@@ -1,17 +1,10 @@
-export type AttendanceStatus = "출석" | "지각" | "결석";
-
-export type AttendanceRow = {
-  name: string;
-  studentId: string;
-  status: AttendanceStatus;
-  checkInTime: string;
-  handling: string;
-  reason: string;
-  statusChanged: string;
-};
+import type { AttendanceDto } from "~/lib/api";
+import { STATUS_LABEL, STATUS_TEXT_COLOR } from "~/lib/attendance";
+import { formatAmPmTime } from "~/lib/datetime";
 
 type Props = {
-  rows: AttendanceRow[];
+  rows: AttendanceDto[];
+  onChangeStatus?: (record: AttendanceDto) => void;
 };
 
 const HEADERS = [
@@ -24,19 +17,11 @@ const HEADERS = [
   "상태 변경",
 ];
 
-/** 출석 상태별 색상(테마 토큰). 출석 success, 지각 warning, 결석 destructive. */
-const STATUS_COLOR: Record<AttendanceStatus, string> = {
-  출석: "text-success",
-  지각: "text-warning",
-  결석: "text-destructive",
-};
-
 /**
- * 출석 현황 테이블.
- * Figma(199:1306): bg-surface, rounded-22, py-40, 7열 그리드(중앙 정렬).
- * 헤더(18px, foreground-subtle) + 하단 보더, 행은 짝/홀 교차 배경. 출석상태만 색상 강조.
+ * 출석 현황 테이블(§17-19).
+ * 이름·학번·상태배지·체크인·수동여부·사유·상태변경 버튼. 7열 그리드(중앙 정렬).
  */
-export function AttendanceTable({ rows }: Props) {
+export function AttendanceTable({ rows, onChangeStatus }: Props) {
   return (
     <div className="w-full overflow-hidden rounded-[22px] bg-surface py-[40px] text-center">
       <div className="grid grid-cols-7 border-b border-foreground-subtle pb-[20px] text-[18px] font-semibold text-foreground-subtle">
@@ -45,22 +30,39 @@ export function AttendanceTable({ rows }: Props) {
         ))}
       </div>
 
-      {rows.map((r, i) => (
-        <div
-          key={r.studentId}
-          className={`grid grid-cols-7 py-[22px] text-[20px] font-semibold ${
-            i % 2 === 0 ? "bg-surface-alt" : "bg-surface"
-          }`}
-        >
-          <span className="text-foreground-muted">{r.name}</span>
-          <span className="text-foreground-muted">{r.studentId}</span>
-          <span className={STATUS_COLOR[r.status]}>{r.status}</span>
-          <span className="text-foreground-muted">{r.checkInTime}</span>
-          <span className="text-foreground-muted">{r.handling}</span>
-          <span className="text-foreground-muted">{r.reason}</span>
-          <span className="text-foreground-muted">{r.statusChanged}</span>
-        </div>
-      ))}
+      {rows.map((r, i) => {
+        const status = r.attendanceStatus ?? "ABSENT";
+        return (
+          <div
+            key={r.recordId ?? i}
+            className={`grid grid-cols-7 items-center py-[22px] text-[20px] font-semibold ${
+              i % 2 === 0 ? "bg-surface-alt" : "bg-surface"
+            }`}
+          >
+            <span className="text-foreground-muted">{r.memberName ?? "-"}</span>
+            <span className="text-foreground-muted">{r.stdId ?? "-"}</span>
+            <span className={STATUS_TEXT_COLOR[status]}>
+              {STATUS_LABEL[status]}
+            </span>
+            <span className="text-foreground-muted">
+              {r.checkedAt ? formatAmPmTime(r.checkedAt) : "-"}
+            </span>
+            <span className="text-foreground-muted">
+              {r.isManual ? "수동" : "자동"}
+            </span>
+            <span className="text-foreground-muted">{r.adminNote || "-"}</span>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => onChangeStatus?.(r)}
+                className="rounded-[12px] bg-border-subtle px-[16px] py-[6px] text-[15px] font-semibold text-foreground-subtle transition-opacity hover:opacity-90"
+              >
+                변경
+              </button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
