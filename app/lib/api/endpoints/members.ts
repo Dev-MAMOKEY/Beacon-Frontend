@@ -1,5 +1,6 @@
 import { request } from "../client";
 import type {
+  ClubMemberResponse,
   FcmTokenUpdateRequest,
   MemberPasswordUpdateRequest,
   MemberProfileResponse,
@@ -8,13 +9,11 @@ import type {
 } from "../types";
 
 // --- 동아리 멤버 (ClubMember) ---
-// NOTE: 아래 3개 응답은 OpenAPI에서 무타입(RsData<?>)이라 unknown으로 둠.
-//       백엔드 스펙 확정 후 타입 보강 필요.
 
 export function getClubMembers(
   clubId: number,
   search?: string,
-): Promise<unknown> {
+): Promise<ClubMemberResponse[]> {
   return request({
     method: "GET",
     url: `/api/v1/clubs/${clubId}/members`,
