@@ -9,8 +9,10 @@ import { MemberRanking } from "~/components/member/MemberRanking";
 import { SearchInput } from "~/components/ui/SearchInput";
 import { useActiveClub } from "~/hooks/use-active-club";
 import { useClubMembers } from "~/hooks/use-club-members";
+import { useClubStats } from "~/hooks/use-club-stats";
 import { useMyProfile } from "~/hooks/use-my-profile";
 import { ApiError, type ClubMemberResponse, membersApi } from "~/lib/api";
+import { toPercent } from "~/lib/stats";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -19,11 +21,22 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// 통계 탭은 목업 유지(#40에서 연동).
-const RANKING = ["김민준", "이신한", "정세모", "홍길동", "박신한", "강네모"];
-
 const TABS = ["멤버", "통계"] as const;
 type Tab = (typeof TABS)[number];
+
+/** Date → "YYYY-MM-DD"(date input 값). */
+function toDateInput(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+/** 기본 기간: 최근 6개월. */
+function defaultRange() {
+  const end = new Date();
+  const start = new Date(end);
+  start.setMonth(end.getMonth() - 6);
+  return { startDate: toDateInput(start), endDate: toDateInput(end) };
+}
 
 export default function Members() {
   const [tab, setTab] = useState<Tab>("멤버");
@@ -33,6 +46,75 @@ export default function Members() {
   const [search, setSearch] = useState("");
   const [busyId, setBusyId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // 통계 탭: 기간 기준 조회(탭 활성 시에만 fetch).
+  const [range, setRange] = useState(defaultRange);
+  const {
+    trend,
+    distribution,
+    memberStats,
+    loading: statsLoading,
+    error: statsError,
+  } = useClubStats(
+    tab === "통계" ? range.startDate : "",
+    tab === "통계" ? range.endDate : "",
+  );
+
+  const trendSeries = useMemo(
+    () => [
+      {
+        label: "출석률",
+        colorClassName: "bg-primary-hover",
+        stroke: "var(--color-primary-hover)",
+        points: trend.map((t) => toPercent(t.attendanceRate)),
+      },
+    ],
+    [trend],
+  );
+  const trendLabels = useMemo(
+    () =>
+      trend.map((t) => {
+        if (!t.date) return "";
+        const [, mo, da] = t.date.split("-");
+        return `${Number(mo)}/${Number(da)}`;
+      }),
+    [trend],
+  );
+  const donutSegments = useMemo(
+    () =>
+      distribution
+        ? [
+            {
+              label: "출석",
+              color: "var(--color-success)",
+              value: distribution.present ?? 0,
+            },
+            {
+              label: "지각",
+              color: "var(--color-warning)",
+              value: distribution.late ?? 0,
+            },
+            {
+              label: "결석",
+              color: "var(--color-destructive)",
+              value: distribution.absent ?? 0,
+            },
+            {
+              label: "기타",
+              color: "var(--color-status-other)",
+              value: distribution.etc ?? 0,
+            },
+          ]
+        : [],
+    [distribution],
+  );
+  const rankingNames = useMemo(
+    () =>
+      [...memberStats]
+        .sort((a, b) => (b.attendanceRate ?? 0) - (a.attendanceRate ?? 0))
+        .map((m) => m.name ?? "-"),
+    [memberStats],
+  );
 
   const currentStdId = profile?.stdId;
   const selfMemberId = useMemo(
@@ -163,15 +245,53 @@ export default function Members() {
             </>
           ) : (
             <div className="flex w-full flex-col gap-[30px]">
+              <div className="flex items-center justify-between gap-[16px] pl-[8px]">
+                <div className="flex items-center gap-[10px] text-[16px] font-medium text-foreground-subtle">
+                  <input
+                    type="date"
+                    value={range.startDate}
+                    onChange={(e) =>
+                      setRange((r) => ({ ...r, startDate: e.target.value }))
+                    }
+                    className="rounded-[10px] border-2 border-input bg-surface px-[14px] py-[8px] text-foreground focus:border-primary focus:outline-none"
+                  />
+                  <span>~</span>
+                  <input
+                    type="date"
+                    value={range.endDate}
+                    onChange={(e) =>
+                      setRange((r) => ({ ...r, endDate: e.target.value }))
+                    }
+                    className="rounded-[10px] border-2 border-input bg-surface px-[14px] py-[8px] text-foreground focus:border-primary focus:outline-none"
+                  />
+                </div>
+                {statsLoading && (
+                  <span className="text-[15px] font-medium text-foreground-subtle">
+                    불러오는 중...
+                  </span>
+                )}
+              </div>
+
+              {statsError && (
+                <p className="pl-[8px] text-[15px] font-medium text-destructive">
+                  {statsError}
+                </p>
+              )}
+
               <div className="flex items-stretch gap-[30px]">
-                <AttendanceChart />
+                <AttendanceChart
+                  title="기간별 출석률 추이"
+                  month=""
+                  weeks={trendLabels}
+                  series={trendSeries}
+                />
                 <div className="flex w-[360px] shrink-0">
-                  <StatusDonutChart />
+                  <StatusDonutChart segments={donutSegments} />
                 </div>
               </div>
               <div className="flex items-stretch gap-[30px]">
                 <div className="flex min-w-0 flex-1">
-                  <MemberRanking ranking={RANKING} />
+                  <MemberRanking ranking={rankingNames} />
                 </div>
                 <div className="flex w-[300px] shrink-0 flex-col justify-center gap-[24px]">
                   <button
