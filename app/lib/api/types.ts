@@ -29,8 +29,8 @@ export type InviteRequestDto = S["InviteRequestDto"];
 export type InviteResponseDto = S["InviteResponseDto"];
 
 // 세션
-export type Session = S["Session"];
-export type SliceSession = S["SliceSession"];
+export type Session = S["SessionResponseDto"];
+export type SliceSession = S["SliceSessionResponseDto"];
 export type SessionDto = S["SessionDto"];
 export type SessionCreateRequestDto = S["SessionCreateRequestDto"];
 export type SessionStartDto = S["SessionStartDto"];
@@ -55,7 +55,8 @@ export type MemberProfileUpdateRequest = S["MemberProfileUpdateRequest"];
 export type MemberPasswordUpdateRequest = S["MemberPaswordUpdateRequest"];
 export type FcmTokenUpdateRequest = S["FcmTokenUpdateRequest"];
 export type RoleUpdateRequest = S["RoleUpdateRequest"];
+export type ClubMemberResponse = S["ClubMemberResponse"];
 
 // 공통 enum
 export type AttendanceStatus = AttendanceDto["attendanceStatus"];
-export type SessionStatus = Session["sessionStatus"];
+export type SessionStatus = Session["status"];
