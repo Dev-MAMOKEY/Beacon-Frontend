@@ -116,22 +116,28 @@ export default function Sessions() {
               )}
               {sessions.map((s, i) => (
                 <SessionCard
-                  key={s.id ?? i}
+                  key={s.sessionId ?? i}
                   session={s}
                   className={DIM[i] ?? "opacity-60"}
-                  busy={busyId === s.id}
+                  busy={busyId === s.sessionId}
                   onEdit={() => openEdit(s)}
                   onStart={() =>
-                    s.id != null &&
-                    runAction(s.id, (c) => sessionsApi.startSession(c, s.id!))
+                    s.sessionId != null &&
+                    runAction(s.sessionId, (c) =>
+                      sessionsApi.startSession(c, s.sessionId!),
+                    )
                   }
                   onEnd={() =>
-                    s.id != null &&
-                    runAction(s.id, (c) => sessionsApi.endSession(c, s.id!))
+                    s.sessionId != null &&
+                    runAction(s.sessionId, (c) =>
+                      sessionsApi.endSession(c, s.sessionId!),
+                    )
                   }
                   onDelete={() =>
-                    s.id != null &&
-                    runAction(s.id, (c) => sessionsApi.deleteSession(c, s.id!))
+                    s.sessionId != null &&
+                    runAction(s.sessionId, (c) =>
+                      sessionsApi.deleteSession(c, s.sessionId!),
+                    )
                   }
                 />
               ))}

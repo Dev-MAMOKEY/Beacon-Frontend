@@ -1,7 +1,7 @@
 import type { Session } from "~/lib/api";
 import { toLocalYmd } from "~/lib/datetime";
 
-type SessionStatus = NonNullable<Session["sessionStatus"]>;
+type SessionStatus = NonNullable<Session["status"]>;
 
 type Props = {
   /** 표시할 세션들. expectStartAt 날짜에 상태별 마커를 찍는다. */
@@ -40,7 +40,7 @@ export function SessionCalendar({ sessions = [], year, month }: Props) {
   for (const s of sessions) {
     const ymd = toLocalYmd(s.expectStartAt);
     if (ymd && ymd.year === y && ymd.month === m) {
-      markers.set(ymd.day, s.sessionStatus ?? "SCHEDULED");
+      markers.set(ymd.day, s.status ?? "SCHEDULED");
     }
   }
 
