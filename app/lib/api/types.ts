@@ -45,8 +45,10 @@ export type MyAttendanceRecordDto = S["MyAttendanceRecordDto"];
 
 // 통계
 export type TrendResponseDto = S["TrendResponseDto"];
+export type TrendItem = S["TrendItem"];
 export type DistributionResponseDto = S["DistributionResponseDto"];
 export type MemberStatsResponseDto = S["MemberStatsResponseDto"];
+export type MemberStatItem = S["MemberStatItem"];
 export type ExportResponseDto = S["ExportResponseDto"];
 
 // 회원 / 동아리 멤버
