@@ -32,8 +32,8 @@ export function SignupForm() {
     e.preventDefault();
     setError(null);
 
-    const stdId = Number(studentId.trim());
-    if (!studentId.trim() || Number.isNaN(stdId)) {
+    const stdId = studentId.trim();
+    if (!stdId || Number.isNaN(Number(stdId))) {
       setError("학번을 숫자로 입력해주세요.");
       return;
     }
