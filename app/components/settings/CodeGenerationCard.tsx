@@ -102,7 +102,7 @@ export function CodeGenerationCard() {
           type="button"
           onClick={handleCopy}
           disabled={!code || disabled}
-          className="flex-1 rounded-[12px] bg-foreground-subtle px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex-1 rounded-[12px] bg-foreground-subtle whitespace-nowrap px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {copied ? "복사됨" : "복사하기"}
         </button>
@@ -110,7 +110,7 @@ export function CodeGenerationCard() {
           type="button"
           onClick={handleIssue}
           disabled={disabled}
-          className="flex-1 rounded-[12px] bg-primary-hover px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex-1 rounded-[12px] bg-primary-hover whitespace-nowrap px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {busy ? "처리 중..." : "다시 만들기"}
         </button>
@@ -118,7 +118,7 @@ export function CodeGenerationCard() {
           type="button"
           onClick={handleRevoke}
           disabled={!code || disabled}
-          className="flex-1 rounded-[12px] bg-destructive px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex-1 rounded-[12px] bg-destructive whitespace-nowrap px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           취소
         </button>
