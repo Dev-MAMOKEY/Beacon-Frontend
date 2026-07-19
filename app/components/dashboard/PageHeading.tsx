@@ -9,23 +9,28 @@ type Props = {
 
 /**
  * 페이지 상단 페이지명 + 날짜 (+ 선택적 세션 상태).
- * Figma 대시보드(169:659): 제목 26px Bold(foreground-muted) + 세션 상태(primary-hover).
- * Figma 세션 관리(169:654): 제목 26px Bold(foreground-subtle), 세션 상태 없음.
- * 날짜는 38px SemiBold(foreground) 공통.
+ * Figma(355:2151 / 388:1859): 제목 24px SemiBold(foreground-subtle, 대문자 트래킹 0.5),
+ * 날짜 38px Bold(foreground-muted), 세션 상태 24px SemiBold(primary-hover, 대문자 트래킹 0.5).
  */
 export function PageHeading({
   title,
   date,
   sessionStatus,
-  titleClassName = "text-foreground-muted",
+  titleClassName = "text-foreground-subtle",
 }: Props) {
   return (
     <div className="flex w-full flex-col gap-[20px]">
-      <h1 className={`text-[26px] font-bold ${titleClassName}`}>{title}</h1>
-      <div className="flex flex-col gap-[10px] pl-[8px] pr-[7px] font-semibold">
-        <p className="text-[38px] text-foreground">{date}</p>
+      <h1
+        className={`text-[24px] font-semibold uppercase tracking-[0.5px] ${titleClassName}`}
+      >
+        {title}
+      </h1>
+      <div className="flex flex-col gap-[10px]">
+        <p className="text-[38px] font-bold text-foreground-muted">{date}</p>
         {sessionStatus && (
-          <p className="text-[24px] text-primary-hover">{sessionStatus}</p>
+          <p className="text-[24px] font-semibold uppercase tracking-[0.5px] text-primary-hover">
+            {sessionStatus}
+          </p>
         )}
       </div>
     </div>
