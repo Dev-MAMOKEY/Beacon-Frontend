@@ -21,8 +21,8 @@ export function meta({}: Route.MetaArgs) {
 const TODAY = new Date();
 const TODAY_LABEL = `${TODAY.getFullYear()}년 ${TODAY.getMonth() + 1}월 ${TODAY.getDate()}일`;
 
-/** 최신 항목일수록 진하고, 이후 항목은 흐려진다. Figma(169:380). */
-const DIM = ["opacity-100", "opacity-80", "opacity-60"];
+/** 첫 항목은 진하고 이후 항목은 흐려진다. Figma(388:1919). */
+const DIM = ["opacity-100", "opacity-70", "opacity-70"];
 
 export default function Sessions() {
   const { activeClubId } = useActiveClub();
@@ -67,7 +67,7 @@ export default function Sessions() {
       <div className="flex flex-1 flex-col">
         <AppHeader />
         <main className="flex flex-1 gap-[30px] p-[30px]">
-          <div className="flex min-w-0 flex-1 flex-col gap-[32px]">
+          <div className="flex min-w-0 flex-1 flex-col gap-[30px]">
             <PageHeading
               title="세션 관리"
               date={TODAY_LABEL}
@@ -76,26 +76,26 @@ export default function Sessions() {
             <SessionCalendar sessions={sessions} />
           </div>
 
-          <div className="flex w-[333px] shrink-0 flex-col gap-[34px]">
-            <div className="flex flex-col gap-[24px]">
+          <div className="flex w-[300px] shrink-0 flex-col gap-[30px]">
+            <div className="flex flex-col gap-[14px]">
               <button
                 type="button"
                 onClick={() => openCreate(false)}
-                className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
               >
                 <Plus className="size-[16px]" />새 세션 만들기
               </button>
               <button
                 type="button"
                 onClick={() => openCreate(true)}
-                className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-primary px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
               >
                 <Repeat className="size-[18px]" />
                 반복 세션 만들기
               </button>
             </div>
 
-            <div className="flex flex-1 flex-col gap-[24px] rounded-[22px] bg-surface-sunken p-[18px]">
+            <div className="flex flex-1 flex-col items-center gap-[24px] rounded-t-[22px] bg-surface-sunken px-[18px] pb-[18px] pt-[26px]">
               {error && (
                 <p className="text-[15px] font-medium text-destructive">{error}</p>
               )}

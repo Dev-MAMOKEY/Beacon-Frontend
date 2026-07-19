@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import type { Session } from "~/lib/api";
 import { toLocalYmd } from "~/lib/datetime";
 
@@ -14,17 +15,18 @@ type Props = {
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-/** 상태별 날짜 마커 배경(테마 토큰 + 불투명도). */
+/** 상태별 날짜 마커: 보더 + 옅은 배경 틴트(Figma 388:1900의 컬러 마커 방식). */
 const STATUS_MARKER: Record<SessionStatus, string> = {
-  SCHEDULED: "bg-border-subtle",
-  ACTIVE: "bg-success/50",
-  ENDED: "bg-destructive/40",
+  SCHEDULED: "border-2 border-primary-hover bg-background",
+  ACTIVE: "border-2 border-success bg-success/10",
+  ENDED: "border-2 border-foreground-subtle bg-surface-sunken",
 };
 
 /**
  * 월간 세션 표시 달력.
- * Figma(158:607): bg-surface, rounded-24, p-40, gap-24.
- * 요일(일=휴일 빨강), 세션이 있는 날짜에 상태색 마커 / 오늘은 테두리 강조.
+ * Figma(384:1900): bg-surface, rounded-24, px-40 py-46, gap-34.
+ * 헤더(월 28px + 연도 우측), 요일(일=빨강, 그 외 gray3),
+ * 날짜는 rounded-20 셀 / 세션·오늘은 보더+틴트로 강조.
  */
 export function SessionCalendar({ sessions = [], year, month }: Props) {
   const now = new Date();
@@ -52,18 +54,23 @@ export function SessionCalendar({ sessions = [], year, month }: Props) {
   ];
 
   return (
-    <div className="flex w-full flex-col gap-[24px] rounded-[24px] bg-surface p-[40px]">
-      <div className="flex items-end gap-[10px]">
-        <p className="text-[38px] font-semibold text-foreground">{m}월</p>
-        <p className="text-[18px] font-medium text-foreground-subtle">{y}년</p>
+    <div className="flex w-full flex-col gap-[34px] rounded-[24px] bg-surface px-[40px] py-[46px]">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[8px]">
+          <p className="text-[28px] font-semibold text-foreground-muted">
+            {m}월
+          </p>
+          <ChevronDown className="size-[28px] text-foreground-muted" />
+        </div>
+        <p className="text-[18px] font-semibold text-foreground-subtle">{y}년</p>
       </div>
 
-      <div className="grid grid-cols-7 gap-x-[40px] gap-y-[20px]">
+      <div className="grid grid-cols-7 gap-[10px]">
         {WEEKDAYS.map((w, i) => (
           <div
             key={w}
-            className={`flex items-center justify-center px-[10px] py-[8px] text-[20px] font-semibold ${
-              i === 0 ? "text-destructive" : "text-foreground"
+            className={`flex items-center justify-center px-[10px] py-[8px] text-[20px] font-semibold tracking-[0.25px] ${
+              i === 0 ? "text-[#ff5d5d]" : "text-foreground-muted"
             }`}
           >
             {w}
@@ -74,12 +81,15 @@ export function SessionCalendar({ sessions = [], year, month }: Props) {
           if (day === null) return <div key={`empty-${i}`} />;
           const status = markers.get(day);
           const isToday = day === today;
-          const bg = status ? STATUS_MARKER[status] : "";
-          const ring = isToday ? "border-[3px] border-accent-project" : "";
+          const marker = isToday
+            ? "border-2 border-primary-hover bg-background"
+            : status
+              ? STATUS_MARKER[status]
+              : "";
           return (
-            <div key={day} className="flex items-center justify-center py-[4px]">
+            <div key={day} className="flex items-center justify-center">
               <span
-                className={`flex size-[44px] items-center justify-center rounded-full text-[20px] font-semibold text-foreground ${bg} ${ring}`}
+                className={`flex h-[44px] w-[44px] items-center justify-center rounded-[20px] text-[20px] font-semibold tracking-[0.25px] text-foreground-muted ${marker}`}
               >
                 {day}
               </span>

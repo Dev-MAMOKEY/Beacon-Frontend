@@ -22,8 +22,8 @@ const DEFAULT_WEEKS = ["1주차", "2주차", "3주차", "4주차"];
 const DEFAULT_SERIES: Series[] = [
   {
     label: "출석",
-    colorClassName: "bg-success",
-    stroke: "var(--color-success)",
+    colorClassName: "bg-primary-hover",
+    stroke: "var(--color-primary-hover)",
     points: [12, 18, 10, 16],
   },
   {
@@ -34,14 +34,14 @@ const DEFAULT_SERIES: Series[] = [
   },
   {
     label: "결석",
-    colorClassName: "bg-destructive",
-    stroke: "var(--color-destructive)",
+    colorClassName: "bg-[#ff5d5d]",
+    stroke: "#ff5d5d",
     points: [6, 5, 7, 4],
   },
   {
     label: "기타",
-    colorClassName: "bg-status-other",
-    stroke: "var(--color-status-other)",
+    colorClassName: "bg-border-subtle",
+    stroke: "var(--color-border-subtle)",
     points: [3, 4, 3, 5],
   },
 ];
@@ -121,7 +121,7 @@ export function AttendanceChart({
       <div className="flex gap-[48px]">
         {series.map((s) => (
           <div key={s.label} className="flex items-center gap-[14px]">
-            <span className={`size-[18px] ${s.colorClassName}`} />
+            <span className={`size-[16px] rounded-[4px] ${s.colorClassName}`} />
             <span className="text-[18px] font-medium text-foreground-subtle">
               {s.label}
             </span>

@@ -12,8 +12,8 @@
   --color-tertiary: #c55500;
   --color-destructive: #ba1a1a;
 
-  /* Surfaces & text — Figma는 카드가 흰색, 페이지 배경이 연회색 */
-  --color-background: #f8f9fa;
+  /* Surfaces & text — Figma는 카드가 흰색, 페이지 배경이 연하늘(#eef7ff) */
+  --color-background: #eef7ff;
   --color-surface: #ffffff;
   --color-surface-muted: #f8fafc;
   --color-surface-sunken: #f3f4f5; /* 회색 패널(AuthCard·모달) */

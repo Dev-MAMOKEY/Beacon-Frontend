@@ -9,8 +9,8 @@ type Props = {
 
 /**
  * 대시보드 상단 요약 지표 카드.
- * Figma(142:333): bg-surface, rounded-20, pl-34 pr-50 py-24, gap-14.
- * 라벨 18px(foreground-muted) + 값 36px, 단위 23px.
+ * Figma(355:2157): bg-surface, rounded-20, pl-34 pr-50 py-24, gap-14.
+ * 라벨 18px SemiBold(foreground-muted) + 값 32px Manrope Bold(색상은 지표별).
  */
 export function MetricCard({
   label,
@@ -21,9 +21,11 @@ export function MetricCard({
   return (
     <div className="flex flex-1 flex-col justify-center gap-[14px] rounded-[20px] bg-surface py-[24px] pl-[34px] pr-[50px]">
       <p className="text-[18px] font-semibold text-foreground-muted">{label}</p>
-      <div className={`flex items-center gap-[4px] font-semibold ${valueClassName}`}>
-        <span className="text-[36px]">{value}</span>
-        {unit && <span className="text-[23px]">{unit}</span>}
+      <div
+        className={`flex items-baseline font-display text-[32px] font-bold ${valueClassName}`}
+      >
+        <span>{value}</span>
+        {unit && <span>{unit}</span>}
       </div>
     </div>
   );
