@@ -13,11 +13,11 @@ type Props = {
   moreCount?: number;
 };
 
-/** 상태별 강조 색상(테마 토큰). 출석 success, 지각 warning, 결석 destructive. */
+/** 상태별 강조 색상(Figma 355:2399). 출석 main, 지각 warning, 결석 #ff5d5d. */
 const STATUS_COLOR: Record<AttendanceStatus, string> = {
-  출석: "text-success",
+  출석: "text-primary-hover",
   지각: "text-warning",
-  결석: "text-destructive",
+  결석: "text-[#ff5d5d]",
 };
 
 /** 최신 항목일수록 진하고, 오래된 항목은 흐려진다. */
@@ -36,7 +36,7 @@ export function AttendanceFeed({ entries, moreCount = 0 }: Props) {
           key={`${entry.name}-${entry.time}-${i}`}
           className={`flex flex-col justify-center gap-[7px] rounded-[20px] bg-surface py-[22px] pl-[34px] pr-[50px] ${OPACITY[i] ?? "opacity-40"}`}
         >
-          <p className="text-[18px] font-medium text-foreground">
+          <p className="text-[18px] font-medium text-foreground-muted">
             {`${entry.name} 님 ${entry.date} `}
             <span className={STATUS_COLOR[entry.status]}>{entry.status}</span>
             했습니다
