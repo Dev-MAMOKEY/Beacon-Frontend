@@ -6,11 +6,13 @@ type Props = {
   currentStdId?: string;
   /** 처리 중인 멤버 id(버튼 비활성). */
   busyMemberId?: number | null;
+  /** 편집 모드: 역할 열이 역할변경 버튼으로 바뀐다. */
+  editMode?: boolean;
   onChangeRole?: (member: ClubMemberResponse) => void;
   onRemove?: (member: ClubMemberResponse) => void;
 };
 
-const HEADERS = ["이름", "학번", "역할", "출석률", "역할 변경", "제명"];
+const HEADERS = ["이름", "학번", "역할", "출석률", "출석 횟수", "제외"];
 
 const ROLE_LABEL: Record<string, string> = {
   ADMIN: "관리자",
@@ -18,19 +20,22 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 /**
- * 멤버 목록 테이블(§17-20 멤버 탭).
- * 이름·학번·역할·출석률 + 역할변경/제명. 본인 행은 액션 비활성 + "(나)" 표시.
+ * 멤버 목록 테이블. Figma(356:1652).
+ * 6열(이름·학번·역할·출석률·출석 횟수·제외) · 헤더 18px gray2 · 행 20px gray3, 교대 배경.
+ * 제외하기(main pill) 상시. 편집 모드에서 역할 열이 역할변경 버튼으로 전환.
+ * 출석 횟수는 백엔드 미제공(rate만) → "-"로 표시(추후 연동).
  */
 export function MemberTable({
   members,
   currentStdId,
   busyMemberId,
+  editMode = false,
   onChangeRole,
   onRemove,
 }: Props) {
   return (
     <div className="w-full overflow-hidden rounded-[22px] bg-surface py-[40px]">
-      <div className="grid grid-cols-6">
+      <div className="grid grid-cols-6 px-[30px]">
         {HEADERS.map((h) => (
           <div
             key={h}
@@ -48,8 +53,8 @@ export function MemberTable({
         return (
           <div
             key={m.memberId ?? i}
-            className={`grid grid-cols-6 items-center py-[20px] text-[20px] font-semibold text-foreground-muted ${
-              i % 2 === 0 ? "bg-surface-alt" : "bg-surface"
+            className={`grid grid-cols-6 items-center px-[30px] py-[20px] text-[20px] font-semibold tracking-[0.25px] text-foreground-muted ${
+              i % 2 === 0 ? "bg-surface" : "bg-surface-alt"
             }`}
           >
             <span className="text-center">
@@ -61,30 +66,35 @@ export function MemberTable({
               )}
             </span>
             <span className="text-center">{m.stdId}</span>
-            <span className="text-center">
-              {ROLE_LABEL[m.role ?? "MEMBER"] ?? m.role}
-            </span>
+
+            <div className="flex justify-center">
+              {editMode ? (
+                <button
+                  type="button"
+                  onClick={() => onChangeRole?.(m)}
+                  disabled={isSelf || busy}
+                  className="rounded-[16px] bg-border-subtle px-[16px] py-[6px] text-[15px] font-semibold text-foreground-subtle transition-opacity hover:opacity-90 disabled:opacity-40"
+                >
+                  {m.role === "ADMIN" ? "동아리원으로" : "관리자로"}
+                </button>
+              ) : (
+                <span>{ROLE_LABEL[m.role ?? "MEMBER"] ?? m.role}</span>
+              )}
+            </div>
+
             <span className="text-center">
               {m.rate != null ? `${Math.round(m.rate)}%` : "-"}
             </span>
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => onChangeRole?.(m)}
-                disabled={isSelf || busy}
-                className="rounded-[14px] bg-border-subtle px-[16px] py-[6px] text-[15px] font-semibold text-foreground-subtle transition-opacity hover:opacity-90 disabled:opacity-40"
-              >
-                {m.role === "ADMIN" ? "동아리원으로" : "관리자로"}
-              </button>
-            </div>
+            <span className="text-center">-</span>
+
             <div className="flex justify-center">
               <button
                 type="button"
                 onClick={() => onRemove?.(m)}
                 disabled={isSelf || busy}
-                className="rounded-[14px] bg-border-subtle px-[16px] py-[6px] text-[15px] font-semibold text-destructive transition-opacity hover:opacity-90 disabled:opacity-40"
+                className="rounded-[16px] bg-primary-hover px-[16px] py-[6px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
               >
-                제명
+                제외하기
               </button>
             </div>
           </div>
