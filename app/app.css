@@ -18,6 +18,7 @@
   --color-surface-muted: #f8fafc;
   --color-surface-sunken: #f3f4f5; /* 회색 패널(AuthCard·모달) */
   --color-surface-alt: #f8f8f8; /* 표 줄무늬 */
+  --color-auth-background: #eef7ff; /* 로그인·회원가입 콘텐츠 배경(연하늘) */
   --color-foreground: #191c1d;
   --color-foreground-muted: #414754;
   --color-foreground-subtle: #64748b;
@@ -50,6 +51,7 @@
     --color-surface-muted: #111827;
     --color-surface-sunken: #0f1729;
     --color-surface-alt: #243244;
+    --color-auth-background: #0f172a; /* 다크에서는 앱 배경과 동일 톤 유지 */
     --color-foreground: #f8fafc;
     --color-foreground-muted: #cbd5e1;
     --color-foreground-subtle: #94a3b8;
@@ -79,6 +81,7 @@
   --color-surface-muted: #111827;
   --color-surface-sunken: #0f1729;
   --color-surface-alt: #243244;
+  --color-auth-background: #0f172a; /* 다크에서는 앱 배경과 동일 톤 유지 */
   --color-foreground: #f8fafc;
   --color-foreground-muted: #cbd5e1;
   --color-foreground-subtle: #94a3b8;

@@ -17,7 +17,7 @@ export default function Login() {
       <SideNavBar />
       <div className="flex flex-1 flex-col">
         <Header user={{ name: "비회원", role: "로그인 해주세요" }} />
-        <main className="flex flex-1 flex-col items-center px-[30px] pb-[30px] pt-[160px]">
+        <main className="flex flex-1 flex-col items-center bg-auth-background px-[30px] pb-[30px] pt-[160px]">
           <AuthCard title="로그인">
             <LoginForm />
           </AuthCard>

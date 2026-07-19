@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { TextField } from "~/components/ui/TextField";
+import { IdCardIcon, LockIcon } from "./field-icons";
 import { ApiError, authApi } from "~/lib/api";
 
 /**
@@ -59,6 +60,7 @@ export function LoginForm() {
           name="studentId"
           label="학번"
           placeholder="학번을 입력해주세요"
+          icon={IdCardIcon}
           inputMode="numeric"
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
@@ -71,6 +73,7 @@ export function LoginForm() {
             type="password"
             label="비밀번호"
             placeholder="비밀번호를 입력해주세요"
+            icon={LockIcon}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={submitting}
@@ -78,7 +81,7 @@ export function LoginForm() {
           <div className="flex justify-end">
             <Link
               to="/find-password"
-              className="text-[16px] text-foreground-subtle hover:underline"
+              className="text-[16px] text-foreground-muted hover:underline"
             >
               비밀번호 찾기
             </Link>
@@ -93,9 +96,9 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={submitting}
-        className={`w-full rounded-[16px] px-[80px] py-[18px] text-[18px] font-medium transition-colors disabled:opacity-60 ${
+        className={`w-full rounded-[20px] px-[80px] py-[16px] text-[18px] font-semibold transition-colors disabled:opacity-60 ${
           isValid
-            ? "bg-primary text-white hover:bg-primary-hover"
+            ? "bg-primary-hover text-white hover:opacity-90"
             : "bg-border-subtle text-foreground-subtle"
         }`}
       >
