@@ -124,7 +124,7 @@ function PillSelect({
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
       aria-label={placeholder}
-      className={`rounded-[10px] bg-background px-[14px] py-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-primary ${value ? "text-foreground" : "text-input"} ${className}`}
+      className={`min-w-0 rounded-[10px] bg-background px-[14px] py-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-primary ${value ? "text-foreground" : "text-input"} ${className}`}
     >
       <option value="" disabled>
         {placeholder}
@@ -297,7 +297,7 @@ export function SessionEditModal({
 
         {/* 날짜 / 시간 */}
         <div className="flex w-full gap-[20px]">
-          <Section title="날짜" className="flex-1">
+          <Section title="날짜" className="min-w-0 flex-1">
             <div className="flex flex-col gap-[10px]">
               <p className={sub}>시작</p>
               <div className="flex gap-[12px]">
@@ -316,11 +316,11 @@ export function SessionEditModal({
             </div>
           </Section>
 
-          <Section title="시간" className="flex-1">
+          <Section title="시간" className="min-w-0 flex-1">
             <div className="flex flex-col gap-[10px]">
               <p className={sub}>시작</p>
               <div className="flex gap-[12px]">
-                <PillSelect className="flex-1" placeholder="오전/오후" options={AMPM_OPTS} value={startTime.ampm} onChange={(v) => setStartTime((p) => ({ ...p, ampm: v }))} disabled={submitting} />
+                <PillSelect className="flex-1" placeholder="오후" options={AMPM_OPTS} value={startTime.ampm} onChange={(v) => setStartTime((p) => ({ ...p, ampm: v }))} disabled={submitting} />
                 <PillSelect className="flex-1" placeholder="시" options={HOUR_OPTS} value={startTime.hour} onChange={(v) => setStartTime((p) => ({ ...p, hour: v }))} disabled={submitting} />
                 <PillSelect className="flex-1" placeholder="분" options={MIN_OPTS} value={startTime.minute} onChange={(v) => setStartTime((p) => ({ ...p, minute: v }))} disabled={submitting} />
               </div>
@@ -328,7 +328,7 @@ export function SessionEditModal({
             <div className="flex flex-col gap-[10px]">
               <p className={sub}>종료</p>
               <div className="flex gap-[12px]">
-                <PillSelect className="flex-1" placeholder="오전/오후" options={AMPM_OPTS} value={endTime.ampm} onChange={(v) => setEndTime((p) => ({ ...p, ampm: v }))} disabled={submitting} />
+                <PillSelect className="flex-1" placeholder="오후" options={AMPM_OPTS} value={endTime.ampm} onChange={(v) => setEndTime((p) => ({ ...p, ampm: v }))} disabled={submitting} />
                 <PillSelect className="flex-1" placeholder="시" options={HOUR_OPTS} value={endTime.hour} onChange={(v) => setEndTime((p) => ({ ...p, hour: v }))} disabled={submitting} />
                 <PillSelect className="flex-1" placeholder="분" options={MIN_OPTS} value={endTime.minute} onChange={(v) => setEndTime((p) => ({ ...p, minute: v }))} disabled={submitting} />
               </div>
