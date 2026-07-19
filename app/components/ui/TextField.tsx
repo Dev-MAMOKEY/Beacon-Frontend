@@ -1,29 +1,41 @@
-import type { InputHTMLAttributes } from "react";
+import type { ComponentType, InputHTMLAttributes, SVGProps } from "react";
 
 type Props = {
   label: string;
+  /** 필드 좌측 아이콘. currentColor를 상속한다. */
+  icon?: ComponentType<SVGProps<SVGSVGElement>>;
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 /**
  * 라벨이 붙은 공용 입력 필드. 회원가입·로그인 폼에서 재사용.
- * Figma(221:823): 라벨 20px SemiBold(foreground-subtle),
- * 인풋 h-57 rounded-10 border-2(border-subtle) px-20 18px, placeholder input.
+ * Figma(409:2504): 라벨 20px SemiBold(foreground-subtle),
+ * 필드 gray4 배경 rounded-10 px-30 py-18 gap-16, 좌측 아이콘 24px,
+ * placeholder 18px Medium(input). 포커스 시 링으로 강조.
  */
-export function TextField({ label, id, className = "", ...inputProps }: Props) {
+export function TextField({
+  label,
+  id,
+  icon: Icon,
+  className = "",
+  ...inputProps
+}: Props) {
   return (
     <div className="flex w-full flex-col gap-[18px]">
       <label
         htmlFor={id}
-        className="text-[20px] font-semibold text-foreground-subtle"
+        className="text-[20px] font-semibold tracking-[0.25px] text-foreground-subtle"
       >
         {label}
       </label>
-      <input
-        id={id}
-        className={`h-[57px] w-full rounded-[10px] border-2 border-border-subtle bg-surface px-5 text-[18px] text-foreground placeholder:text-input focus:border-primary focus:outline-none ${className}`}
-        {...inputProps}
-      />
+      <div className="flex w-full items-center gap-[16px] rounded-[10px] bg-border-subtle px-[30px] py-[18px] focus-within:ring-2 focus-within:ring-primary">
+        {Icon && <Icon className="size-[24px] shrink-0 text-input" />}
+        <input
+          id={id}
+          className={`w-full flex-1 bg-transparent text-[18px] text-foreground placeholder:text-input focus:outline-none ${className}`}
+          {...inputProps}
+        />
+      </div>
     </div>
   );
 }
