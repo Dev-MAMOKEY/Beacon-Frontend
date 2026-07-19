@@ -6,17 +6,17 @@ type Props = {
 
 /**
  * 헤더 우측에 표시하는 유저 정보. 우측 정렬 2줄 텍스트 + 48px 원형 아바타.
- * Figma(223:1140): 이름 18px SemiBold, 소속 12px Medium, gap-21, 아바타 48px
+ * Figma(362:1592): 이름 20px SemiBold, 소속 14px Medium, gap-21, 아바타 48px
  * avatarSrc 없으면 이름 첫 글자로 fallback.
  */
 export function UserProfile({ name, role, avatarSrc }: Props) {
   return (
     <div className="flex items-center gap-[21px]">
       <div className="flex flex-col items-end gap-1">
-        <span className="text-lg font-semibold leading-none text-foreground">
+        <span className="text-[20px] font-semibold leading-none tracking-[0.25px] text-foreground">
           {name}
         </span>
-        <span className="text-xs font-medium leading-none text-foreground-subtle">
+        <span className="text-[14px] font-medium leading-none text-foreground-subtle">
           {role}
         </span>
       </div>
