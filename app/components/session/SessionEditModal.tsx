@@ -33,18 +33,19 @@ type Props = {
   onSaved?: () => void;
 };
 
-/** 흰 카드 섹션. */
+/** 흰 카드 섹션. Figma(368:3332): rounded-20, pt-20 px-26 pb-24, 라벨 16px gray2. */
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex flex-1 flex-col gap-[12px] rounded-[20px] bg-surface px-[26px] pb-[24px] pt-[20px]">
-      <p className="text-[18px] font-semibold text-foreground-subtle">{title}</p>
+      <p className="text-[16px] font-semibold text-foreground-subtle">{title}</p>
       {children}
     </div>
   );
 }
 
+// 채움형 입력(Figma: gray4 배경 rounded-10, 보더 없음, 포커스 링).
 const inputCls =
-  "rounded-[10px] border-2 border-input bg-transparent px-[16px] py-[10px] text-[16px] text-foreground focus:border-primary focus:outline-none";
+  "rounded-[10px] bg-border-subtle px-[24px] py-[10px] text-[16px] text-foreground placeholder:text-input focus:outline-none focus:ring-2 focus:ring-primary";
 
 /**
  * 세션 생성/수정 모달.
@@ -128,18 +129,18 @@ export function SessionEditModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-[40px]"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/50 p-[40px]"
       onClick={onClose}
       role="presentation"
     >
       <form
         onSubmit={handleSubmit}
-        className="flex w-[560px] max-w-full flex-col gap-[14px] rounded-[22px] bg-surface-sunken px-[40px] py-[30px]"
+        className="flex w-[700px] max-w-full flex-col gap-[14px] rounded-[22px] bg-surface-sunken px-[40px] py-[30px]"
         onClick={(e) => e.stopPropagation()}
         aria-label={isEdit ? "세션 수정" : "세션 생성"}
       >
         <div className="flex w-full items-center justify-between">
-          <h2 className="text-[26px] font-semibold text-foreground">
+          <h2 className="text-[24px] font-semibold uppercase tracking-[0.5px] text-foreground-muted">
             {isEdit ? "세션 수정" : "세션 생성"}
           </h2>
           <button
@@ -196,17 +197,17 @@ export function SessionEditModal({
             </label>
             {isRepeat && (
               <div className="flex flex-wrap items-center gap-[12px]">
-                <div className="flex gap-[6px]">
+                <div className="flex gap-[10px]">
                   {DAYS.map((d) => (
                     <button
                       key={d.value}
                       type="button"
                       onClick={() => setDayOfWeek(d.value)}
                       disabled={submitting}
-                      className={`size-[40px] rounded-full text-[15px] font-semibold transition-colors ${
+                      className={`min-w-[44px] rounded-[10px] px-[14px] py-[10px] text-[15px] font-semibold transition-colors ${
                         dayOfWeek === d.value
-                          ? "bg-primary text-white"
-                          : "bg-border-subtle text-foreground-subtle"
+                          ? "bg-primary-hover text-white"
+                          : "bg-background text-foreground-subtle"
                       }`}
                     >
                       {d.label}
@@ -233,7 +234,7 @@ export function SessionEditModal({
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-[16px] bg-primary px-[26px] py-[14px] text-[18px] font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
+          className="w-full rounded-[20px] bg-primary-hover px-[26px] py-[16px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {submitting ? "저장 중..." : isEdit ? "수정 완료" : "생성하기"}
         </button>
