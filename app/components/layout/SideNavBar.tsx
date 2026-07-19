@@ -1,33 +1,33 @@
-import {
-  Calendar,
-  ClipboardCheck,
-  LayoutDashboard,
-  type LucideIcon,
-  Settings,
-  Users,
-} from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
 import { useLocation } from "react-router";
 import { BrandLogo } from "~/components/brand/BrandLogo";
 import { NavLink } from "~/components/nav/NavLink";
+import {
+  AttendanceIcon,
+  DashboardIcon,
+  MembersIcon,
+  SessionIcon,
+  SettingsIcon,
+} from "~/components/nav/nav-icons";
 
 type NavItem = {
   to: string;
-  icon: LucideIcon;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   label: string;
 };
 
 const MAIN_NAV: NavItem[] = [
-  { to: "/", icon: LayoutDashboard, label: "대시 보드" },
-  { to: "/sessions", icon: Calendar, label: "세션 관리" },
-  { to: "/members", icon: Users, label: "멤버/통계" },
-  { to: "/attendance", icon: ClipboardCheck, label: "출석 현황" },
-  { to: "/settings", icon: Settings, label: "설정 메뉴" },
+  { to: "/", icon: DashboardIcon, label: "대시 보드" },
+  { to: "/sessions", icon: SessionIcon, label: "세션 관리" },
+  { to: "/members", icon: MembersIcon, label: "멤버/통계" },
+  { to: "/attendance", icon: AttendanceIcon, label: "출석 현황" },
+  { to: "/settings", icon: SettingsIcon, label: "설정 메뉴" },
 ];
 
 /**
  * 대시보드 좌측 사이드바.
  * Figma(node 142:327): 흰색 배경, px-30 py-40, 로고와 네비 사이 gap-50.
- * 네비 항목은 gap-16, active 항목은 라운드 pill(연회색 배경 + primary 보더/텍스트).
+ * 네비 항목은 gap-16, active 항목은 상하 보더(main)로 강조(NavLink, node 355:1880).
  * 현재 URL과 매칭해 NavLink의 active 상태를 자동 결정한다.
  */
 export function SideNavBar() {
