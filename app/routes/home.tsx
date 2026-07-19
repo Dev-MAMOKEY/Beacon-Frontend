@@ -40,7 +40,7 @@ export default function Home() {
             <MetricCard
               label="오늘 출석 수"
               value={10}
-              valueClassName="text-success"
+              valueClassName="text-primary-hover"
             />
             <MetricCard
               label="오늘 지각 수"
@@ -52,7 +52,7 @@ export default function Home() {
               label="평균 출석률"
               value={96}
               unit="%"
-              valueClassName="text-primary"
+              valueClassName="text-primary-hover"
             />
           </div>
 
