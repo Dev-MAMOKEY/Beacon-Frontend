@@ -21,7 +21,7 @@ export function MemberRanking({
   return (
     <div className="flex w-full flex-col gap-[45px] rounded-[22px] bg-surface px-[50px] py-[40px]">
       <div className="flex items-center justify-between">
-        <h2 className="text-[24px] font-semibold text-foreground-muted">
+        <h2 className="text-[20px] font-semibold tracking-[0.25px] text-foreground-muted">
           {title}
         </h2>
         <span className="text-[16px] font-medium text-foreground-subtle">
@@ -36,13 +36,13 @@ export function MemberRanking({
           return (
             <div
               key={name}
-              className={`flex items-center gap-[8px] ${
+              className={`flex items-center gap-[8px] tracking-[0.25px] ${
                 isTop
                   ? "font-semibold text-primary-hover"
-                  : "font-medium text-foreground-muted"
+                  : "font-semibold text-foreground-subtle"
               }`}
             >
-              <span className={isTop ? "text-[22px]" : "text-[20px]"}>
+              <span className={isTop ? "text-[20px]" : "text-[18px]"}>
                 {rank}
               </span>
               <span className={isTop ? "text-[20px]" : "text-[18px]"}>
