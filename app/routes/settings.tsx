@@ -23,7 +23,7 @@ export default function Settings() {
         <AppHeader />
         <main className="flex flex-1 flex-col p-[30px]">
           <div className="mx-auto flex w-full max-w-[1083px] flex-col gap-[30px]">
-            <h1 className="pl-[8px] text-[26px] font-bold text-foreground-subtle">
+            <h1 className="pl-[8px] text-[24px] font-semibold uppercase tracking-[0.5px] text-foreground-subtle">
               설정
             </h1>
 
