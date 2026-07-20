@@ -80,13 +80,15 @@ export function CodeGenerationCard() {
 
   return (
     <div className="flex flex-1 flex-col justify-between self-stretch rounded-[20px] bg-surface px-[50px] py-[40px]">
-      <h2 className="text-[22px] font-bold text-foreground-subtle">코드 생성</h2>
+      <h2 className="text-[20px] font-semibold tracking-[0.25px] text-foreground-muted">
+        코드 생성
+      </h2>
 
       <div className="flex justify-between gap-[10px]">
         {cells.map((ch, i) => (
           <div
             key={i}
-            className="flex size-[64px] items-center justify-center rounded-[10px] border-2 border-input text-[24px] font-bold text-foreground"
+            className="flex size-[64px] items-center justify-center rounded-[10px] bg-border-subtle text-[24px] font-bold text-foreground"
           >
             {ch}
           </div>
@@ -118,7 +120,7 @@ export function CodeGenerationCard() {
           type="button"
           onClick={handleRevoke}
           disabled={!code || disabled}
-          className="flex-1 rounded-[12px] bg-destructive whitespace-nowrap px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex-1 whitespace-nowrap rounded-[12px] bg-[#ff5d5d] px-[20px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           취소
         </button>
