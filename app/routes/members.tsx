@@ -48,13 +48,12 @@ export default function Members() {
   const [busyId, setBusyId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  // 통계 탭: 기간 기준 조회(탭 활성 시에만 fetch).
-  const [range, setRange] = useState(defaultRange);
+  // 통계 탭: 기간 기준 조회(탭 활성 시에만 fetch). 기본 최근 6개월.
+  const [range] = useState(defaultRange);
   const {
     trend,
     distribution,
     memberStats,
-    loading: statsLoading,
     error: statsError,
   } = useClubStats(
     tab === "통계" ? range.startDate : "",
@@ -87,7 +86,7 @@ export default function Members() {
         ? [
             {
               label: "출석",
-              color: "var(--color-success)",
+              color: "var(--color-primary-hover)",
               value: distribution.present ?? 0,
             },
             {
@@ -97,12 +96,12 @@ export default function Members() {
             },
             {
               label: "결석",
-              color: "var(--color-destructive)",
+              color: "#ff5d5d",
               value: distribution.absent ?? 0,
             },
             {
               label: "기타",
-              color: "var(--color-status-other)",
+              color: "var(--color-input)",
               value: distribution.etc ?? 0,
             },
           ]
@@ -254,33 +253,6 @@ export default function Members() {
             </>
           ) : (
             <div className="flex w-full flex-col gap-[30px]">
-              <div className="flex items-center justify-between gap-[16px] pl-[8px]">
-                <div className="flex items-center gap-[10px] text-[16px] font-medium text-foreground-subtle">
-                  <input
-                    type="date"
-                    value={range.startDate}
-                    onChange={(e) =>
-                      setRange((r) => ({ ...r, startDate: e.target.value }))
-                    }
-                    className="rounded-[10px] border-2 border-input bg-surface px-[14px] py-[8px] text-foreground focus:border-primary focus:outline-none"
-                  />
-                  <span>~</span>
-                  <input
-                    type="date"
-                    value={range.endDate}
-                    onChange={(e) =>
-                      setRange((r) => ({ ...r, endDate: e.target.value }))
-                    }
-                    className="rounded-[10px] border-2 border-input bg-surface px-[14px] py-[8px] text-foreground focus:border-primary focus:outline-none"
-                  />
-                </div>
-                {statsLoading && (
-                  <span className="text-[15px] font-medium text-foreground-subtle">
-                    불러오는 중...
-                  </span>
-                )}
-              </div>
-
               {statsError && (
                 <p className="pl-[8px] text-[15px] font-medium text-destructive">
                   {statsError}
@@ -289,7 +261,7 @@ export default function Members() {
 
               <div className="flex items-stretch gap-[30px]">
                 <AttendanceChart
-                  title="기간별 출석률 추이"
+                  title="기간별 출석률 추이 라인 차트"
                   month=""
                   weeks={trendLabels}
                   series={trendSeries}
@@ -305,13 +277,13 @@ export default function Members() {
                 <div className="flex w-[300px] shrink-0 flex-col justify-center gap-[24px]">
                   <button
                     type="button"
-                    className="w-full rounded-[20px] bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
+                    className="w-full rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
                   >
                     CSV 내보내기
                   </button>
                   <button
                     type="button"
-                    className="w-full rounded-[20px] bg-primary px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
+                    className="w-full rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
                   >
                     Excel 내보내기
                   </button>

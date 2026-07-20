@@ -36,7 +36,7 @@ export function StatusDonutChart({
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-between gap-[40px] rounded-[22px] bg-surface px-[50px] py-[40px]">
-      <h2 className="w-full text-[22px] font-semibold text-foreground-muted">
+      <h2 className="w-full text-[20px] font-semibold tracking-[0.25px] text-foreground-muted">
         {title}
       </h2>
 
@@ -68,7 +68,7 @@ export function StatusDonutChart({
           {segments.map((s) => (
             <div key={s.label} className="flex items-center gap-[14px]">
               <span
-                className="size-[18px] shrink-0"
+                className="size-[18px] shrink-0 rounded-[4px]"
                 style={{ backgroundColor: s.color }}
               />
               <span className="text-[18px] font-medium text-foreground-subtle">
