@@ -44,6 +44,7 @@ export default function Members() {
   const { profile } = useMyProfile();
   const { members, loading, error, reload } = useClubMembers();
   const [search, setSearch] = useState("");
+  const [editMode, setEditMode] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -190,7 +191,7 @@ export default function Members() {
                 key={t}
                 type="button"
                 onClick={() => setTab(t)}
-                className={`pb-[4px] text-[24px] font-bold ${
+                className={`pb-[4px] text-[24px] font-semibold uppercase tracking-[0.5px] ${
                   tab === t
                     ? "border-b-[3px] border-primary-hover text-primary-hover"
                     : "text-foreground-subtle"
@@ -203,12 +204,19 @@ export default function Members() {
 
           {tab === "멤버" ? (
             <>
-              <div className="flex w-full items-center justify-end gap-[16px] pr-[8px]">
+              <div className="flex w-full items-center justify-between gap-[16px] pr-[8px]">
                 <SearchInput
                   placeholder="이름·학번 검색"
                   value={search}
                   onChange={setSearch}
                 />
+                <button
+                  type="button"
+                  onClick={() => setEditMode((v) => !v)}
+                  className="rounded-[16px] border-2 border-primary-hover bg-surface px-[32px] py-[10px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
+                >
+                  {editMode ? "완료" : "편집하기"}
+                </button>
               </div>
 
               {error && (
@@ -237,6 +245,7 @@ export default function Members() {
                   members={filtered}
                   currentStdId={currentStdId}
                   busyMemberId={busyId}
+                  editMode={editMode}
                   onChangeRole={handleChangeRole}
                   onRemove={handleRemove}
                 />
