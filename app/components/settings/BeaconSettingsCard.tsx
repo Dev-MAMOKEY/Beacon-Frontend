@@ -33,7 +33,9 @@ export function BeaconSettingsCard({
 
   return (
     <div className="flex flex-1 flex-col gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
-      <h2 className="text-[22px] font-bold text-foreground-subtle">비콘 설정</h2>
+      <h2 className="text-[20px] font-semibold tracking-[0.25px] text-foreground-muted">
+        비콘 설정
+      </h2>
 
       <div className="flex gap-[70px]">
         <div className="flex flex-col gap-[50px]">
@@ -50,14 +52,14 @@ export function BeaconSettingsCard({
             <span className="text-[18px] font-semibold text-foreground-subtle">
               RSSI
             </span>
-            <span className="text-[30px] font-semibold text-primary-hover">
+            <span className="text-[28px] font-semibold text-primary-hover">
               {rssi}
             </span>
             <div className="flex flex-col">
               <div className="flex h-[44px] items-center">
                 <div className="h-[16px] w-[414px] overflow-hidden rounded-full bg-border-subtle">
                   <div
-                    className="h-full rounded-full bg-primary-hover/50"
+                    className="h-full rounded-full bg-primary-hover"
                     style={{ width: `${signalPercent}%` }}
                   />
                 </div>
@@ -70,7 +72,7 @@ export function BeaconSettingsCard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-[50px] rounded-[22px] bg-surface-sunken p-[40px]">
+        <div className="flex flex-col gap-[50px] rounded-[22px] bg-background p-[40px]">
           <SettingsField
             label="지각 시간 기준"
             placeholder="분"
