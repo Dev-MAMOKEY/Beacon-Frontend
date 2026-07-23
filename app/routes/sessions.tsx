@@ -1,65 +1,30 @@
-import { useState } from "react";
-import { Plus, Repeat } from "lucide-react";
 import type { Route } from "./+types/sessions";
 import { AppHeader } from "~/components/layout/AppHeader";
 import { SideNavBar } from "~/components/layout/SideNavBar";
 import { PageHeading } from "~/components/dashboard/PageHeading";
 import { SessionCalendar } from "~/components/session/SessionCalendar";
 import { SessionCard } from "~/components/session/SessionCard";
-import { SessionEditModal } from "~/components/session/SessionEditModal";
 import { useSessions } from "~/hooks/use-sessions";
-import { useActiveClub } from "~/hooks/use-active-club";
-import { ApiError, type Session, sessionsApi } from "~/lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "세션 관리 · Mamoki Campus" },
-    { name: "description", content: "Beacon 세션 관리" },
+    { name: "description", content: "Beacon 세션 조회" },
   ];
 }
 
 const TODAY = new Date();
 const TODAY_LABEL = `${TODAY.getFullYear()}년 ${TODAY.getMonth() + 1}월 ${TODAY.getDate()}일`;
 
-/** 첫 항목은 진하고 이후 항목은 흐려진다. Figma(388:1919). */
-const DIM = ["opacity-100", "opacity-70", "opacity-70"];
+/** 첫 항목(가장 가까운 세션)은 진하고 이후 항목은 흐려진다. Figma(388:1842). */
+const DIM = ["opacity-100", "opacity-50", "opacity-50"];
 
+/**
+ * 세션 관리 페이지(조회 전용). 웹에서는 세션을 생성/수정하지 않고 달력·목록으로 조회만 한다.
+ * Figma(388:1842): 좌측 페이지명/날짜 + 달력, 우측 세션 리스트 패널.
+ */
 export default function Sessions() {
-  const { activeClubId } = useActiveClub();
-  const { sessions, loading, error, reload } = useSessions();
-  const [editOpen, setEditOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<Session | null>(null);
-  const [repeatDefault, setRepeatDefault] = useState(false);
-  const [busyId, setBusyId] = useState<number | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-
-  function openCreate(repeat: boolean) {
-    setEditTarget(null);
-    setRepeatDefault(repeat);
-    setEditOpen(true);
-  }
-
-  function openEdit(session: Session) {
-    setEditTarget(session);
-    setRepeatDefault(false);
-    setEditOpen(true);
-  }
-
-  async function runAction(id: number, fn: (clubId: number) => Promise<unknown>) {
-    if (activeClubId === null) return;
-    setBusyId(id);
-    setActionError(null);
-    try {
-      await fn(activeClubId);
-      reload();
-    } catch (err) {
-      setActionError(
-        err instanceof ApiError ? err.message : "작업에 실패했습니다.",
-      );
-    } finally {
-      setBusyId(null);
-    }
-  }
+  const { sessions, loading, error } = useSessions();
 
   return (
     <div className="flex min-h-screen">
@@ -76,33 +41,10 @@ export default function Sessions() {
             <SessionCalendar sessions={sessions} />
           </div>
 
-          <div className="flex w-[300px] shrink-0 flex-col gap-[30px]">
-            <div className="flex flex-col gap-[14px]">
-              <button
-                type="button"
-                onClick={() => openCreate(false)}
-                className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
-              >
-                <Plus className="size-[16px]" />새 세션 만들기
-              </button>
-              <button
-                type="button"
-                onClick={() => openCreate(true)}
-                className="flex w-full items-center justify-center gap-[12px] whitespace-nowrap rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
-              >
-                <Repeat className="size-[18px]" />
-                반복 세션 만들기
-              </button>
-            </div>
-
-            <div className="flex flex-1 flex-col items-center gap-[24px] rounded-t-[22px] bg-surface-sunken px-[18px] pb-[18px] pt-[26px]">
+          <div className="flex w-[300px] shrink-0 flex-col">
+            <div className="flex flex-1 flex-col items-center justify-center gap-[24px] rounded-t-[22px] bg-surface-sunken px-[18px] pb-[18px] pt-[26px]">
               {error && (
                 <p className="text-[15px] font-medium text-destructive">{error}</p>
-              )}
-              {actionError && (
-                <p className="text-[15px] font-medium text-destructive">
-                  {actionError}
-                </p>
               )}
               {loading && (
                 <p className="text-[15px] font-medium text-foreground-subtle">
@@ -111,49 +53,20 @@ export default function Sessions() {
               )}
               {!loading && !error && sessions.length === 0 && (
                 <p className="text-[15px] font-medium text-foreground-subtle">
-                  세션이 없습니다. 새 세션을 만들어보세요.
+                  세션이 없습니다.
                 </p>
               )}
               {sessions.map((s, i) => (
                 <SessionCard
                   key={s.sessionId ?? i}
                   session={s}
-                  className={DIM[i] ?? "opacity-60"}
-                  busy={busyId === s.sessionId}
-                  onEdit={() => openEdit(s)}
-                  onStart={() =>
-                    s.sessionId != null &&
-                    runAction(s.sessionId, (c) =>
-                      sessionsApi.startSession(c, s.sessionId!),
-                    )
-                  }
-                  onEnd={() =>
-                    s.sessionId != null &&
-                    runAction(s.sessionId, (c) =>
-                      sessionsApi.endSession(c, s.sessionId!),
-                    )
-                  }
-                  onDelete={() =>
-                    s.sessionId != null &&
-                    runAction(s.sessionId, (c) =>
-                      sessionsApi.deleteSession(c, s.sessionId!),
-                    )
-                  }
+                  className={DIM[i] ?? "opacity-50"}
                 />
               ))}
             </div>
           </div>
         </main>
       </div>
-
-      <SessionEditModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        clubId={activeClubId}
-        session={editTarget}
-        repeatDefault={repeatDefault}
-        onSaved={reload}
-      />
     </div>
   );
 }
