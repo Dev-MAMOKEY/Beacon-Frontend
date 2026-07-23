@@ -50,6 +50,7 @@ export type DistributionResponseDto = S["DistributionResponseDto"];
 export type MemberStatsResponseDto = S["MemberStatsResponseDto"];
 export type MemberStatItem = S["MemberStatItem"];
 export type ExportResponseDto = S["ExportResponseDto"];
+export type ExportItem = S["ExportItem"];
 
 // 회원 / 동아리 멤버
 export type MemberProfileResponse = S["MemberProfileResponse"];

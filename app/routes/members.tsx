@@ -11,7 +11,8 @@ import { useActiveClub } from "~/hooks/use-active-club";
 import { useClubMembers } from "~/hooks/use-club-members";
 import { useClubStats } from "~/hooks/use-club-stats";
 import { useMyProfile } from "~/hooks/use-my-profile";
-import { ApiError, type ClubMemberResponse, membersApi } from "~/lib/api";
+import { ApiError, type ClubMemberResponse, membersApi, statsApi } from "~/lib/api";
+import { exportCsv, exportXls } from "~/lib/export";
 import { toPercent } from "~/lib/stats";
 
 export function meta({}: Route.MetaArgs) {
@@ -47,6 +48,8 @@ export default function Members() {
   const [editMode, setEditMode] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState<"csv" | "xls" | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // 통계 탭: 기간 기준 조회(탭 활성 시에만 fetch). 기본 최근 6개월.
   const [range] = useState(defaultRange);
@@ -179,6 +182,26 @@ export default function Members() {
     );
   }
 
+  // 현재 조회 기간의 출석 데이터를 서버에서 받아 CSV/Excel로 다운로드한다.
+  async function handleExport(kind: "csv" | "xls") {
+    if (activeClubId === null) return;
+    setExporting(kind);
+    setExportError(null);
+    try {
+      const res = await statsApi.exportAttendance(activeClubId, range);
+      const items = res.data ?? [];
+      const base = `출석_${range.startDate}_${range.endDate}`;
+      if (kind === "csv") exportCsv(`${base}.csv`, items);
+      else exportXls(`${base}.xls`, items);
+    } catch (err) {
+      setExportError(
+        err instanceof ApiError ? err.message : "내보내기에 실패했습니다.",
+      );
+    } finally {
+      setExporting(null);
+    }
+  }
+
   return (
     <div className="flex min-h-screen">
       <SideNavBar />
@@ -277,16 +300,25 @@ export default function Members() {
                 <div className="flex w-[300px] shrink-0 flex-col justify-center gap-[24px]">
                   <button
                     type="button"
-                    className="w-full rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
+                    onClick={() => handleExport("csv")}
+                    disabled={exporting !== null}
+                    className="w-full rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    CSV 내보내기
+                    {exporting === "csv" ? "내보내는 중..." : "CSV 내보내기"}
                   </button>
                   <button
                     type="button"
-                    className="w-full rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90"
+                    onClick={() => handleExport("xls")}
+                    disabled={exporting !== null}
+                    className="w-full rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    Excel 내보내기
+                    {exporting === "xls" ? "내보내는 중..." : "Excel 내보내기"}
                   </button>
+                  {exportError && (
+                    <p className="text-[14px] font-medium text-destructive">
+                      {exportError}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
