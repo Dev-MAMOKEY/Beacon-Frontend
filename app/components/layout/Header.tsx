@@ -4,6 +4,7 @@ import { IconButton } from "~/components/ui/IconButton";
 import { SearchInput } from "~/components/ui/SearchInput";
 import { UserProfile } from "~/components/user/UserProfile";
 import { ThemeToggle } from "~/components/ThemeToggle";
+import { LogoutButton } from "~/components/layout/LogoutButton";
 
 type Props = {
   user: {
@@ -19,7 +20,7 @@ type Props = {
 /**
  * 대시보드 상단 고정 헤더.
  * Figma(node 221:987): 흰 배경, pt-20 pb-14 px-30.
- * 좌측 검색 / 우측 프로필(이름·소속·아바타) · 구분선 · 알림 · 테마 토글
+ * 좌측 검색 / 우측 프로필(이름·소속·아바타) · 구분선 · 알림 · 테마 토글 · 로그아웃
  */
 export function Header({
   user,
@@ -43,6 +44,7 @@ export function Header({
             <Bell className="size-[18px]" />
           </IconButton>
           <ThemeToggle />
+          <LogoutButton />
         </div>
       </div>
     </header>
