@@ -19,8 +19,8 @@ export default [
     ]),
   ]),
   // 인증 페이지: 로그인 상태면 /로 가드(auth-layout의 clientMiddleware)
+  // 웹은 조회 전용이라 회원가입 없이 로그인만 제공한다.
   layout("routes/auth-layout.tsx", [
     route("login", "routes/login.tsx"),
-    route("signup", "routes/signup.tsx"),
   ]),
 ] satisfies RouteConfig;
