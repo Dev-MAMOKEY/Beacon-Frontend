@@ -5,9 +5,9 @@ import { IdCardIcon, LockIcon } from "./field-icons";
 import { ApiError, authApi } from "~/lib/api";
 
 /**
- * 로그인 폼. 학번·비밀번호 입력 + 비밀번호 찾기 링크 + 로그인 버튼 + 회원가입 안내.
+ * 로그인 폼. 학번·비밀번호 입력 + 비밀번호 찾기 링크 + 로그인 버튼.
  * 제출 시 authApi.login 호출 → 토큰 저장(레이어 내장) 후 대시보드로 이동.
- * Figma(221:1063).
+ * 웹은 조회 전용이라 회원가입 진입점은 두지 않는다. Figma(221:1063).
  */
 export function LoginForm() {
   const navigate = useNavigate();
@@ -104,13 +104,6 @@ export function LoginForm() {
       >
         {submitting ? "로그인 중..." : "로그인"}
       </button>
-
-      <div className="flex items-center justify-center gap-[10px]">
-        <span className="text-[16px] text-foreground-subtle">아직 회원이 아니신가요?</span>
-        <Link to="/signup" className="text-[16px] text-foreground underline">
-          회원가입 시작하기
-        </Link>
-      </div>
     </form>
   );
 }
