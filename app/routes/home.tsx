@@ -12,8 +12,10 @@ import {
 import { useActiveClub } from "~/hooks/use-active-club";
 import { useClubMembers } from "~/hooks/use-club-members";
 import { useClubStats } from "~/hooks/use-club-stats";
+import { useClubSummary } from "~/hooks/use-club-summary";
 import { useSessions } from "~/hooks/use-sessions";
 import { useSessionAttendance } from "~/hooks/use-session-attendance";
+import { useAttendanceStream } from "~/hooks/use-attendance-stream";
 import type { AttendanceDto } from "~/lib/api";
 import { toPercent } from "~/lib/stats";
 
@@ -68,25 +70,33 @@ export default function Home() {
   const { activeClubId } = useActiveClub();
   const { members } = useClubMembers();
 
-  // 진행 중인 세션(오늘 지표·피드·상태의 기준). 없으면 null.
+  // 진행 중인 세션(피드·상태의 기준). 없으면 null.
   const { sessions: activeSessions } = useSessions("ACTIVE");
   const activeSession = activeSessions[0] ?? null;
 
-  // 진행 중 세션의 출석 현황(30초 폴링으로 준실시간 갱신).
-  const { rows } = useSessionAttendance(
+  // 진행 중 세션의 출석 현황(피드용). SSE 이벤트 + 30초 폴링 폴백으로 갱신.
+  const { rows, reload: reloadAttendance } = useSessionAttendance(
     activeClubId,
     activeSession?.sessionId ?? null,
   );
 
-  // 추이 차트·평균 출석률(최근 6개월 기준).
-  const [range] = useState(defaultRange);
-  const { trend, distribution } = useClubStats(range.startDate, range.endDate);
+  // 대시보드 요약 지표(오늘 출석·지각·전체 멤버·평균 출석률).
+  const { summary, reload: reloadSummary } = useClubSummary();
 
-  const todayPresent = rows.filter(
-    (r) => r.attendanceStatus === "PRESENT",
-  ).length;
-  const todayLate = rows.filter((r) => r.attendanceStatus === "LATE").length;
-  const avgRate = Math.round(toPercent(distribution?.presentRate));
+  // 실시간 출석 스트림(SSE) 수신 시 요약·출석 현황 재조회.
+  useAttendanceStream(activeClubId, () => {
+    reloadSummary();
+    reloadAttendance();
+  });
+
+  // 추이 차트(최근 6개월 기준).
+  const [range] = useState(defaultRange);
+  const { trend } = useClubStats(range.startDate, range.endDate);
+
+  const todayPresent = summary?.todayPresent ?? 0;
+  const todayLate = summary?.todayLate ?? 0;
+  const totalMembers = summary?.totalMembers ?? members.length;
+  const avgRate = Math.round(toPercent(summary?.avgRate));
 
   const trendSeries = useMemo(
     () => [
@@ -155,7 +165,7 @@ export default function Home() {
               value={todayLate}
               valueClassName="text-warning"
             />
-            <MetricCard label="전체 멤버 수" value={members.length} />
+            <MetricCard label="전체 멤버 수" value={totalMembers} />
             <MetricCard
               label="평균 출석률"
               value={avgRate}
