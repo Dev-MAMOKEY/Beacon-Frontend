@@ -4,6 +4,30 @@
  */
 
 export interface paths {
+    "/api/v1/clubs/{clubId}/beacon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 비콘 설정 조회
+         * @description 동아리의 비콘 설정을 조회합니다. 설정이 없으면 기본값으로 생성 후 반환합니다. 동아리 멤버만 가능합니다.
+         */
+        get: operations["getBeaconConfig"];
+        /**
+         * 비콘 설정 수정
+         * @description 동아리의 비콘 설정(UUID, 지각 기준, 안정화 시간, RSSI 임계값)을 수정합니다. ADMIN만 가능합니다.
+         */
+        put: operations["updateBeaconConfig"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs/{clubId}/sessions": {
         parameters: {
             query?: never;
@@ -83,7 +107,7 @@ export interface paths {
         put?: never;
         /**
          * 출석 체크
-         * @description OTP 코드를 입력하여 출석을 처리합니다. 세션 시작 후 5분 이내 출석 시 PRESENT, 이후 LATE로 처리됩니다.
+         * @description OTP 코드를 입력하여 출석을 처리합니다. 세션 시작 후 비콘 설정의 지각 기준 시간(기본 10분) 이내 출석 시 PRESENT, 이후 LATE로 처리됩니다.
          */
         post: operations["checkAttendance"];
         delete?: never;
@@ -416,6 +440,26 @@ export interface paths {
         patch: operations["updateRole"];
         trace?: never;
     };
+    "/api/v1/clubs/{clubId}/members/{memberId}/part": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 멤버 파트 변경
+         * @description 동아리 멤버의 파트(예: 프론트엔드/기획/디자인/백엔드)를 지정합니다. ADMIN만 가능합니다.
+         */
+        patch: operations["updatePart"];
+        trace?: never;
+    };
     "/api/v1/clubs/soft-delete/{clubId}": {
         parameters: {
             query?: never;
@@ -448,6 +492,26 @@ export interface paths {
          * @description 기간별 세션 출석률 추이를 조회합니다. startDate ~ endDate 범위의 세션 데이터를 반환합니다. ADMIN만 가능합니다.
          */
         get: operations["getTrend"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/stats/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 대시보드 요약 조회
+         * @description 오늘 출석/지각 수, 전체 멤버 수, 평균 출석률을 조회합니다. ADMIN만 가능합니다.
+         */
+        get: operations["getSummary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -576,6 +640,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clubs/{clubId}/attendance/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 실시간 출석 피드 구독 (SSE)
+         * @description 출석이 발생할 때마다 attendance 이벤트를 실시간으로 수신합니다. ADMIN만 가능합니다. 브라우저 기본 EventSource는 Authorization 헤더를 못 보내므로 프론트는 fetch 기반 SSE 클라이언트를 사용해야 합니다.
+         */
+        get: operations["stream"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs/{clubId}/members/{memberId}": {
         parameters: {
             query?: never;
@@ -600,21 +684,42 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        BeaconConfigDto: {
+            uuid: string;
+            /** Format: int32 */
+            lateThresholdMinutes: number;
+            /** Format: int32 */
+            rssiStabilizationSeconds: number;
+            /** Format: int32 */
+            rssiThreshold: number;
+        };
+        ErrorInfo: {
+            code?: string;
+            message?: string;
+        };
+        RsDataBeaconConfigDto: {
+            success?: boolean;
+            data?: components["schemas"]["BeaconConfigDto"];
+            error?: components["schemas"]["ErrorInfo"];
+            /** Format: date-time */
+            timestamp?: string;
+        };
         SessionCreateRequestDto: {
             sessionName: string;
             /** Format: date-time */
             expectStartAt: string;
             /** Format: date-time */
             expectEndAt: string;
-            isRepeat?: boolean;
             /** @enum {string} */
-            dayOfWeek?: "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
+            sessionCategory?: "CLUB" | "MEETING" | "PROJECT";
+            location?: string;
+            description?: string;
+            /** @enum {string} */
+            sessionRepeatType?: "WEEKLY" | "DAILY";
+            daysOfWeek?: ("MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY")[];
+            isRepeat?: boolean;
             /** Format: date */
             repeatEndDate?: string;
-        };
-        ErrorInfo: {
-            code?: string;
-            message?: string;
         };
         RsDataVoid: {
             success?: boolean;
@@ -720,12 +825,14 @@ export interface components {
         };
         MemberProfileUpdateRequest: {
             name: string;
+            title?: string;
             pushEnabled?: boolean;
         };
         MemberProfileResponse: {
             name?: string;
             clubIds?: number[];
             stdId?: string;
+            title?: string;
             pushEnabled?: boolean;
         };
         RsDataMemberProfileResponse: {
@@ -749,6 +856,10 @@ export interface components {
             expectStartAt?: string;
             /** Format: date-time */
             expectEndAt?: string;
+            /** @enum {string} */
+            sessionCategory?: "CLUB" | "MEETING" | "PROJECT";
+            location?: string;
+            description?: string;
         };
         AttendanceStatusUpdateDto: {
             /** @enum {string} */
@@ -764,6 +875,15 @@ export interface components {
             targetMemberId?: number;
             /** @enum {string} */
             newRole?: "ADMIN" | "MEMBER";
+        };
+        PartUpdateRequest: {
+            /** Format: int64 */
+            clubId?: number;
+            /** Format: int64 */
+            requesterId?: number;
+            /** Format: int64 */
+            targetMemberId?: number;
+            newPart?: string;
         };
         ClubResponseDto: {
             /** Format: int64 */
@@ -802,6 +922,23 @@ export interface components {
         };
         TrendResponseDto: {
             trend?: components["schemas"]["TrendItem"][];
+        };
+        RsDataSummaryResponseDto: {
+            success?: boolean;
+            data?: components["schemas"]["SummaryResponseDto"];
+            error?: components["schemas"]["ErrorInfo"];
+            /** Format: date-time */
+            timestamp?: string;
+        };
+        SummaryResponseDto: {
+            /** Format: int64 */
+            todayPresent?: number;
+            /** Format: int64 */
+            todayLate?: number;
+            /** Format: int64 */
+            totalMembers?: number;
+            /** Format: double */
+            avgRate?: number;
         };
         MemberStatItem: {
             /** Format: int64 */
@@ -853,9 +990,9 @@ export interface components {
             timestamp?: string;
         };
         PageableObject: {
+            unpaged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageSize?: number;
@@ -876,6 +1013,10 @@ export interface components {
             sessionName?: string;
             /** @enum {string} */
             status?: "SCHEDULED" | "ACTIVE" | "ENDED";
+            /** @enum {string} */
+            category?: "CLUB" | "MEETING" | "PROJECT";
+            location?: string;
+            description?: string;
             /** Format: date-time */
             expectStartAt?: string;
             /** Format: date-time */
@@ -955,6 +1096,9 @@ export interface components {
             role?: "ADMIN" | "MEMBER";
             /** Format: double */
             rate?: number;
+            /** Format: int64 */
+            attendanceCount?: number;
+            part?: string;
         };
         RsDataListClubMemberResponse: {
             success?: boolean;
@@ -1022,6 +1166,10 @@ export interface components {
             /** Format: date-time */
             timestamp?: string;
         };
+        SseEmitter: {
+            /** Format: int64 */
+            timeout?: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -1031,6 +1179,121 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getBeaconConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 비콘 설정 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataBeaconConfigDto"];
+                };
+            };
+            /** @description Access Token 만료 또는 형식 오류 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 동아리가 존재하지 않는 경우 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "success": false,
+                     *       "data": null,
+                     *       "error": {
+                     *         "code": "CLUB_NOT_FOUND",
+                     *         "message": "동아리가 존재하지 않습니다."
+                     *       },
+                     *       "timestamp": "2025-04-25T10:00:00"
+                     *     }
+                     */
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    updateBeaconConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BeaconConfigDto"];
+            };
+        };
+        responses: {
+            /** @description 비콘 설정 수정 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataBeaconConfigDto"];
+                };
+            };
+            /** @description Access Token 만료 또는 형식 오류 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 동아리 멤버가 아니거나 ADMIN 권한이 없는 경우 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 동아리가 존재하지 않는 경우 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "success": false,
+                     *       "data": null,
+                     *       "error": {
+                     *         "code": "CLUB_NOT_FOUND",
+                     *         "message": "동아리가 존재하지 않습니다."
+                     *       },
+                     *       "timestamp": "2025-04-25T10:00:00"
+                     *     }
+                     */
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     getSessions: {
         parameters: {
             query?: {
@@ -2784,6 +3047,60 @@ export interface operations {
             };
         };
     };
+    updatePart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description 파트 변경 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataVoid"];
+                };
+            };
+            /** @description Access Token 만료 또는 형식 오류 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 동아리 멤버가 아니거나 ADMIN 권한이 없는 경우 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 회원이 존재하지 않거나 대상이 동아리 멤버가 아닌 경우 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     softDeleteClub: {
         parameters: {
             query?: never;
@@ -2865,6 +3182,46 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RsDataTrendResponseDto"];
+                };
+            };
+            /** @description Access Token 만료 또는 형식 오류 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 동아리 멤버가 아니거나 ADMIN 권한이 없는 경우 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    getSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 대시보드 요약 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataSummaryResponseDto"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */
@@ -3157,6 +3514,46 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RsDataExportResponseDto"];
+                };
+            };
+            /** @description Access Token 만료 또는 형식 오류 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description 동아리 멤버가 아니거나 ADMIN 권한이 없는 경우 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    stream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description SSE 연결 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["SseEmitter"];
                 };
             };
             /** @description Access Token 만료 또는 형식 오류 */
