@@ -51,6 +51,10 @@ export type MemberStatsResponseDto = S["MemberStatsResponseDto"];
 export type MemberStatItem = S["MemberStatItem"];
 export type ExportResponseDto = S["ExportResponseDto"];
 export type ExportItem = S["ExportItem"];
+export type SummaryResponseDto = S["SummaryResponseDto"];
+
+// 비콘
+export type BeaconConfigDto = S["BeaconConfigDto"];
 
 // 회원 / 동아리 멤버
 export type MemberProfileResponse = S["MemberProfileResponse"];
@@ -59,6 +63,7 @@ export type MemberPasswordUpdateRequest = S["MemberPaswordUpdateRequest"];
 export type FcmTokenUpdateRequest = S["FcmTokenUpdateRequest"];
 export type RoleUpdateRequest = S["RoleUpdateRequest"];
 export type ClubMemberResponse = S["ClubMemberResponse"];
+export type PartUpdateRequest = S["PartUpdateRequest"];
 
 // 공통 enum
 export type AttendanceStatus = AttendanceDto["attendanceStatus"];

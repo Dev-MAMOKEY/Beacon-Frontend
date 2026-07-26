@@ -3,10 +3,19 @@ import type {
   DistributionResponseDto,
   ExportResponseDto,
   MemberStatsResponseDto,
+  SummaryResponseDto,
   TrendResponseDto,
 } from "../types";
 
 type DateRange = { startDate: string; endDate: string };
+
+/** 대시보드 요약(오늘 출석·지각·전체 멤버·평균 출석률). */
+export function getSummary(clubId: number): Promise<SummaryResponseDto> {
+  return request({
+    method: "GET",
+    url: `/api/v1/clubs/${clubId}/stats/summary`,
+  });
+}
 
 /** 기간별 출석 트렌드 (라인 차트). */
 export function getTrend(
