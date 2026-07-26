@@ -6,13 +6,14 @@ type Props = {
   currentStdId?: string;
   /** 처리 중인 멤버 id(버튼 비활성). */
   busyMemberId?: number | null;
-  /** 편집 모드: 역할 열이 역할변경 버튼으로 바뀐다. */
+  /** 편집 모드: 역할·파트 열이 편집 버튼으로 바뀐다. */
   editMode?: boolean;
   onChangeRole?: (member: ClubMemberResponse) => void;
+  onChangePart?: (member: ClubMemberResponse) => void;
   onRemove?: (member: ClubMemberResponse) => void;
 };
 
-const HEADERS = ["이름", "학번", "역할", "출석률", "출석 횟수", "제외"];
+const HEADERS = ["이름", "학번", "역할", "파트", "출석률", "출석 횟수", "제외"];
 
 const ROLE_LABEL: Record<string, string> = {
   ADMIN: "관리자",
@@ -21,9 +22,9 @@ const ROLE_LABEL: Record<string, string> = {
 
 /**
  * 멤버 목록 테이블. Figma(356:1652).
- * 6열(이름·학번·역할·출석률·출석 횟수·제외) · 헤더 18px gray2 · 행 20px gray3, 교대 배경.
- * 제외하기(main pill) 상시. 편집 모드에서 역할 열이 역할변경 버튼으로 전환.
- * 출석 횟수는 백엔드 미제공(rate만) → "-"로 표시(추후 연동).
+ * 7열(이름·학번·역할·파트·출석률·출석 횟수·제외) · 헤더 18px gray2 · 행 20px gray3, 교대 배경.
+ * 제외하기(main pill) 상시. 편집 모드에서 역할·파트 열이 편집 버튼으로 전환.
+ * 역할=권한(관리자/동아리원), 파트=전공/담당(프론트엔드 등, 백엔드 `part`).
  */
 export function MemberTable({
   members,
@@ -31,11 +32,12 @@ export function MemberTable({
   busyMemberId,
   editMode = false,
   onChangeRole,
+  onChangePart,
   onRemove,
 }: Props) {
   return (
     <div className="w-full overflow-hidden rounded-[22px] bg-surface py-[40px]">
-      <div className="grid grid-cols-6 px-[30px]">
+      <div className="grid grid-cols-7 px-[30px]">
         {HEADERS.map((h) => (
           <div
             key={h}
@@ -53,7 +55,7 @@ export function MemberTable({
         return (
           <div
             key={m.memberId ?? i}
-            className={`grid grid-cols-6 items-center px-[30px] py-[20px] text-[20px] font-semibold tracking-[0.25px] text-foreground-muted ${
+            className={`grid grid-cols-7 items-center px-[30px] py-[20px] text-[20px] font-semibold tracking-[0.25px] text-foreground-muted ${
               i % 2 === 0 ? "bg-surface" : "bg-surface-alt"
             }`}
           >
@@ -82,10 +84,25 @@ export function MemberTable({
               )}
             </div>
 
+            <div className="flex justify-center">
+              {editMode ? (
+                <button
+                  type="button"
+                  onClick={() => onChangePart?.(m)}
+                  disabled={busy}
+                  className="rounded-[16px] bg-border-subtle px-[16px] py-[6px] text-[15px] font-semibold text-foreground-subtle transition-opacity hover:opacity-90 disabled:opacity-40"
+                >
+                  {m.part ? "파트 변경" : "파트 지정"}
+                </button>
+              ) : (
+                <span>{m.part || "-"}</span>
+              )}
+            </div>
+
             <span className="text-center">
               {m.rate != null ? `${Math.round(m.rate)}%` : "-"}
             </span>
-            <span className="text-center">-</span>
+            <span className="text-center">{m.attendanceCount ?? "-"}</span>
 
             <div className="flex justify-center">
               <button

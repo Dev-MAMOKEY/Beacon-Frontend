@@ -138,10 +138,10 @@ export default function Members() {
   async function runAction(
     memberId: number,
     fn: (clubId: number) => Promise<unknown>,
-    confirmMsg: string,
+    confirmMsg?: string,
   ) {
     if (activeClubId === null) return;
-    if (!window.confirm(confirmMsg)) return;
+    if (confirmMsg && !window.confirm(confirmMsg)) return;
     setBusyId(memberId);
     setActionError(null);
     try {
@@ -170,6 +170,26 @@ export default function Members() {
           newRole,
         }),
       `${m.name} 님의 역할을 ${label}(으)로 변경할까요?`,
+    );
+  }
+
+  function handleChangePart(m: ClubMemberResponse) {
+    if (m.memberId == null) return;
+    const next = window.prompt(
+      `${m.name} 님의 파트를 입력하세요 (예: 프론트엔드/기획/디자인/백엔드)`,
+      m.part ?? "",
+    );
+    if (next === null) return;
+    const newPart = next.trim();
+    if (!newPart || newPart === (m.part ?? "")) return;
+    // prompt 확정이 곧 확인이므로 추가 confirm은 생략.
+    runAction(m.memberId, (clubId) =>
+      membersApi.updateMemberPart(clubId, m.memberId!, {
+        clubId,
+        requesterId: selfMemberId,
+        targetMemberId: m.memberId,
+        newPart,
+      }),
     );
   }
 
@@ -270,6 +290,7 @@ export default function Members() {
                   busyMemberId={busyId}
                   editMode={editMode}
                   onChangeRole={handleChangeRole}
+                  onChangePart={handleChangePart}
                   onRemove={handleRemove}
                 />
               )}
