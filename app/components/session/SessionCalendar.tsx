@@ -1,11 +1,10 @@
 import { ChevronDown } from "lucide-react";
 import type { Session } from "~/lib/api";
 import { toLocalYmd } from "~/lib/datetime";
-
-type SessionStatus = NonNullable<Session["status"]>;
+import { CATEGORY_STYLE, type SessionCategory } from "./session-category";
 
 type Props = {
-  /** 표시할 세션들. expectStartAt 날짜에 상태별 마커를 찍는다. */
+  /** 표시할 세션들. expectStartAt 날짜에 카테고리별 마커를 찍는다. */
   sessions?: Session[];
   /** 표시 연도. 기본 오늘. */
   year?: number;
@@ -15,18 +14,14 @@ type Props = {
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-/** 상태별 날짜 마커: 보더 + 옅은 배경 틴트(Figma 388:1900의 컬러 마커 방식). */
-const STATUS_MARKER: Record<SessionStatus, string> = {
-  SCHEDULED: "border-2 border-primary-hover bg-background",
-  ACTIVE: "border-2 border-success bg-success/10",
-  ENDED: "border-2 border-foreground-subtle bg-surface-sunken",
-};
+/** 카테고리 없는 세션의 기본 마커(보더 + 옅은 배경 틴트). */
+const DEFAULT_MARKER = "border-2 border-primary-hover bg-background";
 
 /**
  * 월간 세션 표시 달력.
  * Figma(384:1900): bg-surface, rounded-24, px-40 py-46, gap-34.
  * 헤더(월 28px + 연도 우측), 요일(일=빨강, 그 외 gray3),
- * 날짜는 rounded-20 셀 / 세션·오늘은 보더+틴트로 강조.
+ * 날짜는 rounded-20 셀 / 세션·오늘은 카테고리 색 보더+틴트로 강조.
  */
 export function SessionCalendar({ sessions = [], year, month }: Props) {
   const now = new Date();
@@ -37,12 +32,12 @@ export function SessionCalendar({ sessions = [], year, month }: Props) {
       ? now.getDate()
       : undefined;
 
-  // 해당 월의 날짜 → 세션 상태 마커.
-  const markers = new Map<number, SessionStatus>();
+  // 해당 월의 날짜 → 세션 카테고리 마커(카테고리 없으면 null).
+  const markers = new Map<number, SessionCategory | null>();
   for (const s of sessions) {
     const ymd = toLocalYmd(s.expectStartAt);
     if (ymd && ymd.year === y && ymd.month === m) {
-      markers.set(ymd.day, s.status ?? "SCHEDULED");
+      markers.set(ymd.day, s.category ?? null);
     }
   }
 
@@ -79,12 +74,15 @@ export function SessionCalendar({ sessions = [], year, month }: Props) {
 
         {cells.map((day, i) => {
           if (day === null) return <div key={`empty-${i}`} />;
-          const status = markers.get(day);
+          const hasSession = markers.has(day);
+          const category = markers.get(day);
           const isToday = day === today;
           const marker = isToday
-            ? "border-2 border-primary-hover bg-background"
-            : status
-              ? STATUS_MARKER[status]
+            ? DEFAULT_MARKER
+            : hasSession
+              ? category
+                ? CATEGORY_STYLE[category].marker
+                : DEFAULT_MARKER
               : "";
           return (
             <div key={day} className="flex items-center justify-center">
