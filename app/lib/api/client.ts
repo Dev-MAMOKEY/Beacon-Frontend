@@ -47,7 +47,10 @@ async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return null;
   try {
-    // 서버가 refresh에도 Bearer 토큰을 요구하므로(헤더 없으면 403) 만료된 accessToken을 함께 보낸다.
+    // FIXME(백엔드 수정 후 헤더 제거): 스펙상 이 API는 refreshToken만 받는다.
+    // 그런데 /auth/refresh가 전역 인증 필터에서 제외되지 않아, 헤더 없이 보내면 403이 된다.
+    // 서버가 permitAll 처리되면 아래 Authorization 헤더는 지워야 한다.
+    //
     // `http`가 아닌 맨 axios를 쓰는 이유: `http`의 401 인터셉터가 이 요청에서 다시 발동하면
     // 실행 중인 `refreshing` 프라미스를 스스로 await 하게 되어 데드락이 된다.
     const token = getAccessToken();
