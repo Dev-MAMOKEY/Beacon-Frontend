@@ -2,9 +2,17 @@ import type { InputHTMLAttributes } from "react";
 
 type Props = {
   label: string;
-  align?: "left" | "right";
+  align?: "left" | "center" | "right";
+  /** 인풋 패딩. 시안마다 달라서(동아리 정보 px-20/py-14, 비콘 px-10·px-30/py-12) 열어둔다. */
+  padding?: string;
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
+
+const ALIGN_CLASS = {
+  left: "text-left",
+  center: "text-center",
+  right: "text-right",
+} as const;
 
 /**
  * 설정 페이지 공용 라벨 입력 필드.
@@ -14,6 +22,7 @@ type Props = {
 export function SettingsField({
   label,
   align = "left",
+  padding = "px-[20px] py-[14px]",
   className = "",
   ...inputProps
 }: Props) {
@@ -23,9 +32,7 @@ export function SettingsField({
         {label}
       </label>
       <input
-        className={`rounded-[10px] bg-border-subtle px-[20px] py-[14px] text-[18px] text-foreground placeholder:text-input focus:outline-none focus:ring-2 focus:ring-primary ${
-          align === "right" ? "text-right" : ""
-        } ${className}`}
+        className={`rounded-[10px] bg-border-subtle text-[18px] text-foreground placeholder:text-input focus:outline-none focus:ring-2 focus:ring-primary ${padding} ${ALIGN_CLASS[align]} ${className}`}
         {...inputProps}
       />
     </div>
