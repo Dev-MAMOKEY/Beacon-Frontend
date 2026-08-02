@@ -47,10 +47,19 @@ async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return null;
   try {
+    // 서버가 refresh에도 Bearer 토큰을 요구하므로(헤더 없으면 403) 만료된 accessToken을 함께 보낸다.
+    // `http`가 아닌 맨 axios를 쓰는 이유: `http`의 401 인터셉터가 이 요청에서 다시 발동하면
+    // 실행 중인 `refreshing` 프라미스를 스스로 await 하게 되어 데드락이 된다.
+    const token = getAccessToken();
     const res = await axios.post<RsData<TokenResponse>>(
       `${BASE_URL}/api/v1/auth/refresh`,
       { refreshToken },
-      { headers: { "Content-Type": "application/json" } },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      },
     );
     const { accessToken, refreshToken: newRefresh } = res.data.data ?? {};
     if (!res.data.success || !accessToken || !newRefresh) return null;
