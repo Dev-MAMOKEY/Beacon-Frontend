@@ -13,7 +13,7 @@ export function UserProfile({ name, role, avatarSrc }: Props) {
   return (
     <div className="flex items-center gap-[21px]">
       <div className="flex flex-col items-end gap-1">
-        <span className="text-[20px] font-semibold leading-none tracking-[0.25px] text-foreground">
+        <span className="text-[20px] font-semibold leading-none tracking-[0.25px] text-foreground-muted">
           {name}
         </span>
         <span className="text-[14px] font-medium leading-none text-foreground-subtle">

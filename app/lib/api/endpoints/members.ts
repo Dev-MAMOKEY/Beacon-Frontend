@@ -5,6 +5,7 @@ import type {
   MemberPasswordUpdateRequest,
   MemberProfileResponse,
   MemberProfileUpdateRequest,
+  PartUpdateRequest,
   RoleUpdateRequest,
 } from "../types";
 
@@ -39,6 +40,19 @@ export function updateMemberRole(
   return request({
     method: "PATCH",
     url: `/api/v1/clubs/${clubId}/members/${memberId}/role`,
+    data: body,
+  });
+}
+
+/** 멤버 파트(전공/역할) 변경 — 관리자. */
+export function updateMemberPart(
+  clubId: number,
+  memberId: number,
+  body: PartUpdateRequest,
+): Promise<unknown> {
+  return request({
+    method: "PATCH",
+    url: `/api/v1/clubs/${clubId}/members/${memberId}/part`,
     data: body,
   });
 }
