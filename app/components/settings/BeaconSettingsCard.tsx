@@ -121,8 +121,8 @@ export function BeaconSettingsCard() {
   });
 
   return (
-    <div className="flex flex-1 flex-col justify-center gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
-      <div className="flex items-center justify-between gap-[16px]">
+    <div className="flex min-h-px flex-1 flex-col items-start justify-center gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
+      <div className="flex w-full items-center justify-between gap-[16px]">
         <h2 className="text-[20px] font-semibold tracking-[0.25px] text-foreground-muted">
           비콘 설정
         </h2>

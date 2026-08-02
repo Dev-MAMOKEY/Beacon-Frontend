@@ -62,9 +62,14 @@ export default function Settings() {
       <div className="flex flex-1 flex-col">
         <AppHeader />
         <main className="flex flex-1 flex-col p-[30px]">
-          <div className="flex w-full flex-1 flex-col gap-[30px]">
+          {/*
+            시안(356:2142)은 콘텐츠 1143px(안쪽 1083px) 고정 폭에 items-start다.
+            폭을 풀면 코드 칸이 사방으로 벌어지고 비콘 카드가 가로로 늘어나 비율이 깨진다.
+            넓은 화면에서 왼쪽에만 붙지 않도록 가운데 정렬한다.
+          */}
+          <div className="mx-auto flex w-full max-w-[1083px] flex-1 flex-col items-start gap-[30px]">
             {/* 시안 485:907 — 제목과 저장 버튼을 양끝으로 */}
-            <div className="flex items-start justify-between pr-[30px]">
+            <div className="flex w-full items-start justify-between pr-[30px]">
               <h1 className="pl-[8px] text-[24px] font-semibold uppercase tracking-[0.5px] text-foreground-subtle">
                 설정
               </h1>
@@ -93,7 +98,7 @@ export default function Settings() {
             </div>
 
             {loading ? null : activeClubId === null ? (
-              <div className="flex flex-col items-center gap-[12px] rounded-[20px] bg-surface px-[50px] py-[60px] text-center">
+              <div className="flex w-full flex-col items-center gap-[12px] rounded-[20px] bg-surface px-[50px] py-[60px] text-center">
                 <p className="text-[20px] font-semibold text-foreground">
                   소속된 동아리가 없습니다
                 </p>
@@ -104,7 +109,8 @@ export default function Settings() {
               </div>
             ) : (
               <SettingsSaveContext.Provider value={saveContext}>
-                <div className="flex items-stretch gap-[32px]">
+                {/* 시안 356:2145 — 이 행만 w-full, 아래 비콘 카드는 콘텐츠 폭에 맞춘다 */}
+                <div className="flex w-full items-stretch gap-[32px]">
                   <ClubInfoCard />
                   <CodeGenerationCard />
                 </div>
