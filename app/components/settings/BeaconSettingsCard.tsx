@@ -1,14 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { SettingsField } from "./SettingsField";
+import { useRegisterSave } from "./settings-save";
 import { useActiveClub } from "~/hooks/use-active-club";
 import { ApiError, beaconApi, type BeaconConfigDto } from "~/lib/api";
 
 /** rssiThreshold 허용 범위(BeaconConfigDto). -90=먼 신호, -40=가까운 신호. */
 const RSSI_MIN = -90;
 const RSSI_MAX = -40;
-
-/** 입력이 멎고 이 시간이 지나면 저장한다. 슬라이더 드래그 중엔 매번 타이머가 갱신된다. */
-const AUTOSAVE_MS = 600;
 
 /** 임계값을 게이지 채움 비율(0~100)로 변환한다. */
 function toPercent(rssi: number): number {
@@ -35,7 +33,7 @@ type Status =
  * 비콘 설정 카드. GET/PUT `/clubs/{clubId}/beacon` 연동.
  * Figma(356:2171): bg-surface, rounded-20, pl-34 pr-50 py-40, gap-30.
  * 좌측 UUID·RSSI 임계값 슬라이더 / 우측 패널(지각 기준·안정화 시간).
- * 시안에 저장 버튼이 없어 입력이 멎으면 자동 저장하고, 상태는 제목 우측에 표시한다.
+ * 저장은 페이지 상단 "저장하기"가 맡고, 이 카드의 저장 상태만 제목 우측에 표시한다.
  */
 export function BeaconSettingsCard() {
   const { activeClubId } = useActiveClub();
@@ -46,15 +44,10 @@ export function BeaconSettingsCard() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
-  // 서버에서 채운 값으로 인한 변경까지 저장하지 않도록, 사용자가 만진 뒤에만 true.
-  const dirtyRef = useRef(false);
-  const reqRef = useRef(0);
-
   // 활성 동아리의 비콘 설정을 조회해 폼에 채운다.
   useEffect(() => {
     if (activeClubId === null) return;
     let active = true;
-    dirtyRef.current = false;
     setLoading(true);
     setStatus({ kind: "idle" });
     beaconApi
@@ -84,31 +77,26 @@ export function BeaconSettingsCard() {
     };
   }, [activeClubId]);
 
-  // 입력이 멎으면 자동 저장(시안에 저장 버튼이 없다).
-  useEffect(() => {
-    if (activeClubId === null || !dirtyRef.current) return;
+  // 저장은 상단 "저장하기" 버튼이 일괄 실행한다(시안 485:915).
+  useRegisterSave(async () => {
+    if (activeClubId === null) return;
 
     const normalizedUuid = normalizeUuid(uuid);
     const minutes = Number(lateThreshold);
     const seconds = Number(rssiStabilization);
 
-    if (!normalizedUuid) {
-      setStatus({ kind: "error", message: "UUID는 32자리 16진수여야 합니다." });
-      return;
-    }
-    if (!Number.isInteger(minutes) || minutes < 0) {
-      setStatus({
-        kind: "error",
-        message: "지각 시간 기준은 0 이상의 정수여야 합니다.",
-      });
-      return;
-    }
-    if (!Number.isInteger(seconds) || seconds < 1) {
-      setStatus({
-        kind: "error",
-        message: "RSSI 신호 안정화 시간은 1 이상의 정수여야 합니다.",
-      });
-      return;
+    // 서버가 UUID 형식을 검증하지 않으므로 잘못된 값이 나가지 않게 여기서 막는다.
+    const invalid = !normalizedUuid
+      ? "UUID는 32자리 16진수여야 합니다."
+      : !Number.isInteger(minutes) || minutes < 0
+        ? "지각 시간 기준은 0 이상의 정수여야 합니다."
+        : !Number.isInteger(seconds) || seconds < 1
+          ? "RSSI 신호 안정화 시간은 1 이상의 정수여야 합니다."
+          : null;
+    if (invalid || !normalizedUuid) {
+      const message = invalid ?? "비콘 설정 값이 올바르지 않습니다.";
+      setStatus({ kind: "error", message });
+      throw new Error(message);
     }
 
     const body: BeaconConfigDto = {
@@ -117,32 +105,20 @@ export function BeaconSettingsCard() {
       rssiStabilizationSeconds: seconds,
       rssiThreshold,
     };
-    const clubId = activeClubId;
-    const timer = setTimeout(async () => {
-      const req = ++reqRef.current;
-      setStatus({ kind: "saving" });
-      try {
-        await beaconApi.updateBeaconConfig(clubId, body);
-        if (req === reqRef.current) setStatus({ kind: "saved" });
-      } catch (err) {
-        if (req !== reqRef.current) return;
-        setStatus({
-          kind: "error",
-          message:
-            err instanceof ApiError
-              ? err.message
-              : "비콘 설정 저장에 실패했습니다.",
-        });
-      }
-    }, AUTOSAVE_MS);
 
-    return () => clearTimeout(timer);
-  }, [activeClubId, uuid, lateThreshold, rssiStabilization, rssiThreshold]);
-
-  /** 사용자 입력임을 표시해 자동 저장을 켠다. */
-  function markDirty() {
-    dirtyRef.current = true;
-  }
+    setStatus({ kind: "saving" });
+    try {
+      await beaconApi.updateBeaconConfig(activeClubId, body);
+      setStatus({ kind: "saved" });
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "비콘 설정 저장에 실패했습니다.";
+      setStatus({ kind: "error", message });
+      throw err;
+    }
+  });
 
   return (
     <div className="flex flex-1 flex-col justify-center gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
@@ -163,7 +139,6 @@ export function BeaconSettingsCard() {
             align="center"
             value={uuid}
             onChange={(e) => {
-              markDirty();
               setUuid(e.target.value);
             }}
           />
@@ -185,7 +160,6 @@ export function BeaconSettingsCard() {
                   step={1}
                   value={rssiThreshold}
                   onChange={(e) => {
-                    markDirty();
                     setRssiThreshold(Number(e.target.value));
                   }}
                   aria-label="RSSI 임계값"
@@ -216,7 +190,6 @@ export function BeaconSettingsCard() {
             inputMode="numeric"
             value={lateThreshold}
             onChange={(e) => {
-              markDirty();
               setLateThreshold(e.target.value);
             }}
           />
@@ -229,7 +202,6 @@ export function BeaconSettingsCard() {
             inputMode="numeric"
             value={rssiStabilization}
             onChange={(e) => {
-              markDirty();
               setRssiStabilization(e.target.value);
             }}
           />
@@ -239,7 +211,7 @@ export function BeaconSettingsCard() {
   );
 }
 
-/** 제목 우측 상태 문구. 저장 버튼이 없으므로 저장 여부를 여기서만 알린다. */
+/** 제목 우측 상태 문구. 어느 카드가 실패했는지 알 수 있게 카드 단위로도 표시한다. */
 function StatusText({ loading, status }: { loading: boolean; status: Status }) {
   if (loading)
     return (
