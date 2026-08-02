@@ -7,6 +7,7 @@ import { AttendanceTable } from "~/components/attendance/AttendanceTable";
 import { AttendanceStatusModal } from "~/components/attendance/AttendanceStatusModal";
 import { SearchInput } from "~/components/ui/SearchInput";
 import { useActiveClub } from "~/hooks/use-active-club";
+import { useAttendanceStream } from "~/hooks/use-attendance-stream";
 import { useSessions } from "~/hooks/use-sessions";
 import { useSessionAttendance } from "~/hooks/use-session-attendance";
 import type { AttendanceDto } from "~/lib/api";
@@ -48,6 +49,10 @@ export default function Attendance() {
     activeClubId,
     sessionId,
   );
+
+  // 실시간 출석 이벤트가 오면 즉시 재조회한다.
+  // useSessionAttendance의 30초 폴링은 SSE가 끊겼을 때의 폴백으로 그대로 둔다.
+  useAttendanceStream(activeClubId, reload);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [search, setSearch] = useState("");
