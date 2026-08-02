@@ -3,27 +3,26 @@ import { SettingsField } from "./SettingsField";
 import { useActiveClub } from "~/hooks/use-active-club";
 import { ApiError, beaconApi, type BeaconConfigDto } from "~/lib/api";
 
-type Props = {
-  /** RSSI 표시값 (예: "-70dBm"). 실시간 RSSI는 백엔드 미제공이라 표시용. */
-  rssi?: string;
-  /** 신호 세기 게이지 채움 비율 (0~100). */
-  signalPercent?: number;
-};
+/** rssiThreshold 허용 범위(BeaconConfigDto). -90=먼 신호, -40=가까운 신호. */
+const RSSI_MIN = -90;
+const RSSI_MAX = -40;
+
+/** 임계값을 게이지 채움 비율(0~100)로 변환한다. */
+function toPercent(rssi: number): number {
+  return ((rssi - RSSI_MIN) / (RSSI_MAX - RSSI_MIN)) * 100;
+}
 
 /**
  * 비콘 설정 카드. GET/PUT `/clubs/{clubId}/beacon` 연동.
- * Figma(188:819): bg-surface, rounded-20, pl-34 pr-50 py-40, gap-30.
- * 좌측 UUID·RSSI 게이지(표시용) / 우측 회색 패널(지각 기준·안정화 시간·RSSI 임계값) + 저장.
+ * Figma(356:2171): bg-surface, rounded-20, pl-34 pr-50 py-40, gap-30.
+ * 좌측 UUID(읽기 전용)·RSSI 임계값 슬라이더 / 우측 패널(지각 기준·안정화 시간) + 저장.
  */
-export function BeaconSettingsCard({
-  rssi = "-70dBm",
-  signalPercent = 94,
-}: Props) {
+export function BeaconSettingsCard() {
   const { activeClubId } = useActiveClub();
   const [uuid, setUuid] = useState("");
   const [lateThreshold, setLateThreshold] = useState("");
   const [rssiStabilization, setRssiStabilization] = useState("");
-  const [rssiThreshold, setRssiThreshold] = useState("");
+  const [rssiThreshold, setRssiThreshold] = useState(RSSI_MIN);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +41,7 @@ export function BeaconSettingsCard({
         setUuid(c.uuid ?? "");
         setLateThreshold(String(c.lateThresholdMinutes ?? ""));
         setRssiStabilization(String(c.rssiStabilizationSeconds ?? ""));
-        setRssiThreshold(String(c.rssiThreshold ?? ""));
+        setRssiThreshold(c.rssiThreshold ?? RSSI_MIN);
       })
       .catch((err) => {
         if (active)
@@ -68,13 +67,14 @@ export function BeaconSettingsCard({
       uuid: uuid.trim(),
       lateThresholdMinutes: Number(lateThreshold),
       rssiStabilizationSeconds: Number(rssiStabilization),
-      rssiThreshold: Number(rssiThreshold),
+      rssiThreshold,
     };
     if (
       !body.uuid ||
-      Number.isNaN(body.lateThresholdMinutes) ||
-      Number.isNaN(body.rssiStabilizationSeconds) ||
-      Number.isNaN(body.rssiThreshold)
+      !Number.isInteger(body.lateThresholdMinutes) ||
+      body.lateThresholdMinutes < 0 ||
+      !Number.isInteger(body.rssiStabilizationSeconds) ||
+      body.rssiStabilizationSeconds < 1
     ) {
       setError("모든 값을 올바르게 입력해주세요.");
       return;
@@ -93,7 +93,7 @@ export function BeaconSettingsCard({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
+    <div className="flex flex-1 flex-col justify-center gap-[30px] rounded-[20px] bg-surface py-[40px] pl-[34px] pr-[50px]">
       <div className="flex items-center justify-between">
         <h2 className="text-[20px] font-semibold tracking-[0.25px] text-foreground-muted">
           비콘 설정
@@ -111,6 +111,8 @@ export function BeaconSettingsCard({
             label="UUID"
             placeholder="e.g. FDA50693-A4E2-4FB1A4E2-4FB1"
             className="w-full"
+            padding="px-[10px] py-[12px]"
+            align="center"
             value={uuid}
             readOnly
           />
@@ -120,18 +122,29 @@ export function BeaconSettingsCard({
               RSSI
             </span>
             <span className="text-[28px] font-semibold text-primary-hover">
-              {rssi}
+              {rssiThreshold}dBm
             </span>
             <div className="flex flex-col">
-              <div className="flex h-[44px] items-center">
-                <div className="h-[16px] w-[414px] overflow-hidden rounded-full bg-border-subtle">
+              <div className="relative flex h-[44px] w-[414px] items-center">
+                {/* 투명한 range를 트랙 위에 겹쳐 드래그·키보드 조작을 그대로 살린다. */}
+                <input
+                  type="range"
+                  min={RSSI_MIN}
+                  max={RSSI_MAX}
+                  step={1}
+                  value={rssiThreshold}
+                  onChange={(e) => setRssiThreshold(Number(e.target.value))}
+                  aria-label="RSSI 임계값"
+                  className="peer absolute inset-0 z-10 size-full cursor-pointer opacity-0"
+                />
+                <div className="h-[16px] w-full overflow-hidden rounded-full bg-border-subtle peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
                   <div
                     className="h-full rounded-full bg-primary-hover"
-                    style={{ width: `${signalPercent}%` }}
+                    style={{ width: `${toPercent(rssiThreshold)}%` }}
                   />
                 </div>
               </div>
-              <div className="flex w-[414px] justify-between text-[16px] font-medium text-foreground-subtle">
+              <div className="flex w-[414px] justify-between text-[18px] font-medium text-foreground-subtle">
                 <span>(먼)</span>
                 <span>(가까운)</span>
               </div>
@@ -139,12 +152,13 @@ export function BeaconSettingsCard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-[30px] rounded-[22px] bg-background p-[40px]">
+        <div className="flex flex-col justify-center gap-[50px] rounded-[22px] bg-background p-[40px]">
           <SettingsField
             label="지각 시간 기준"
             placeholder="분"
             align="right"
             className="w-full"
+            padding="px-[30px] py-[12px]"
             inputMode="numeric"
             value={lateThreshold}
             onChange={(e) => setLateThreshold(e.target.value)}
@@ -154,18 +168,10 @@ export function BeaconSettingsCard({
             placeholder="초"
             align="right"
             className="w-full"
+            padding="px-[30px] py-[12px]"
             inputMode="numeric"
             value={rssiStabilization}
             onChange={(e) => setRssiStabilization(e.target.value)}
-          />
-          <SettingsField
-            label="RSSI 임계값"
-            placeholder="dBm (예: -70)"
-            align="right"
-            className="w-full"
-            inputMode="numeric"
-            value={rssiThreshold}
-            onChange={(e) => setRssiThreshold(e.target.value)}
           />
         </div>
       </div>
