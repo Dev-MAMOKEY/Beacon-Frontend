@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { SettingsField } from "./SettingsField";
+import { useRegisterSave } from "./settings-save";
 import { useActiveClub } from "~/hooks/use-active-club";
 import { ApiError, clubsApi } from "~/lib/api";
 
@@ -46,7 +47,8 @@ export function ClubInfoCard() {
     };
   }, [activeClubId]);
 
-  async function handleSave() {
+  // 저장은 상단 "저장하기" 버튼이 일괄 실행한다(시안 485:915).
+  useRegisterSave(async () => {
     if (activeClubId === null) return;
     setSaving(true);
     setSaved(false);
@@ -55,13 +57,14 @@ export function ClubInfoCard() {
       await clubsApi.updateClub(activeClubId, { clubName, clubDescription });
       setSaved(true);
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "저장에 실패했습니다.",
-      );
+      const message =
+        err instanceof ApiError ? err.message : "저장에 실패했습니다.";
+      setError(message);
+      throw err;
     } finally {
       setSaving(false);
     }
-  }
+  });
 
   const disabled = activeClubId === null || loading || saving;
 
@@ -96,15 +99,6 @@ export function ClubInfoCard() {
       {error && (
         <p className="text-[14px] font-medium text-destructive">{error}</p>
       )}
-
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={disabled}
-        className="self-end rounded-[12px] bg-primary-hover px-[24px] py-[10px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-      >
-        {saving ? "저장 중..." : saved ? "저장됨" : "저장"}
-      </button>
     </div>
   );
 }
