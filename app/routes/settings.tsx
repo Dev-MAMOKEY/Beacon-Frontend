@@ -62,7 +62,7 @@ export default function Settings() {
       <div className="flex flex-1 flex-col">
         <AppHeader />
         <main className="flex flex-1 flex-col p-[30px]">
-          <div className="flex w-full max-w-[1083px] flex-col gap-[30px]">
+          <div className="flex w-full flex-1 flex-col gap-[30px]">
             {/* 시안 485:907 — 제목과 저장 버튼을 양끝으로 */}
             <div className="flex items-start justify-between pr-[30px]">
               <h1 className="pl-[8px] text-[24px] font-semibold uppercase tracking-[0.5px] text-foreground-subtle">
