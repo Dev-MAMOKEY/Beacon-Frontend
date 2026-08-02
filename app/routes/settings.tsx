@@ -65,9 +65,9 @@ export default function Settings() {
           {/*
             시안(356:2142)은 콘텐츠 1143px(안쪽 1083px) 고정 폭에 items-start다.
             폭을 풀면 코드 칸이 사방으로 벌어지고 비콘 카드가 가로로 늘어나 비율이 깨진다.
-            넓은 화면에서 왼쪽에만 붙지 않도록 가운데 정렬한다.
+            넓은 화면에서는 시안처럼 사이드바에 이어 좌측 정렬한다.
           */}
-          <div className="mx-auto flex w-full max-w-[1083px] flex-1 flex-col items-start gap-[30px]">
+          <div className="flex w-full max-w-[1083px] flex-1 flex-col items-start gap-[30px]">
             {/* 시안 485:907 — 제목과 저장 버튼을 양끝으로 */}
             <div className="flex w-full items-start justify-between pr-[30px]">
               <h1 className="pl-[8px] text-[24px] font-semibold uppercase tracking-[0.5px] text-foreground-subtle">
