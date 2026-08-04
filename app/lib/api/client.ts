@@ -33,8 +33,19 @@ export const http = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// 요청마다 Bearer 토큰 주입.
+// 인증 필터 예외 경로: 토큰을 받기 위한 요청이라 Authorization을 붙이면 안 된다.
+// 낡은 토큰이 실려 가면 서버 JWT 필터에서 불필요한 검증 실패를 유발한다.
+// 로그아웃은 토큰이 필요하므로 제외 대상이 아니다.
+const NO_AUTH_PATHS = [
+  "/api/v1/auth/login",
+  "/api/v1/auth/signup",
+  "/api/v1/auth/refresh",
+];
+
+// 요청마다 Bearer 토큰 주입(예외 경로 제외).
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const url = config.url ?? "";
+  if (NO_AUTH_PATHS.some((path) => url.startsWith(path))) return config;
   const token = getAccessToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
