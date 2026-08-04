@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import type { Route } from "./+types/members";
-import { AppHeader } from "~/components/layout/AppHeader";
-import { SideNavBar } from "~/components/layout/SideNavBar";
 import { AttendanceChart } from "~/components/dashboard/AttendanceChart";
 import { MemberTable } from "~/components/member/MemberTable";
 import { StatusDonutChart } from "~/components/member/StatusDonutChart";
@@ -223,129 +221,123 @@ export default function Members() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      <SideNavBar />
-      <div className="flex flex-1 flex-col">
-        <AppHeader />
-        <main className="flex flex-1 flex-col gap-[30px] p-[30px]">
-          <div className="flex w-full gap-[30px] pl-[8px]">
-            {TABS.map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTab(t)}
-                className={`pb-[4px] text-[24px] font-semibold uppercase tracking-[0.5px] ${
-                  tab === t
-                    ? "border-b-[3px] border-primary-hover text-primary-hover"
-                    : "text-foreground-subtle"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+    <main className="flex flex-1 flex-col gap-[30px] p-[30px]">
+      <div className="flex w-full gap-[30px] pl-[8px]">
+        {TABS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTab(t)}
+            className={`pb-[4px] text-[24px] font-semibold uppercase tracking-[0.5px] ${
+              tab === t
+                ? "border-b-[3px] border-primary-hover text-primary-hover"
+                : "text-foreground-subtle"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {tab === "멤버" ? (
+        <>
+          <div className="flex w-full items-center justify-between gap-[16px] pr-[8px]">
+            <SearchInput
+              placeholder="이름·학번 검색"
+              value={search}
+              onChange={setSearch}
+            />
+            <button
+              type="button"
+              onClick={() => setEditMode((v) => !v)}
+              className="rounded-[16px] border-2 border-primary-hover bg-surface px-[32px] py-[10px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
+            >
+              {editMode ? "완료" : "편집하기"}
+            </button>
           </div>
 
-          {tab === "멤버" ? (
-            <>
-              <div className="flex w-full items-center justify-between gap-[16px] pr-[8px]">
-                <SearchInput
-                  placeholder="이름·학번 검색"
-                  value={search}
-                  onChange={setSearch}
-                />
-                <button
-                  type="button"
-                  onClick={() => setEditMode((v) => !v)}
-                  className="rounded-[16px] border-2 border-primary-hover bg-surface px-[32px] py-[10px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90"
-                >
-                  {editMode ? "완료" : "편집하기"}
-                </button>
-              </div>
-
-              {error && (
-                <p className="text-[15px] font-medium text-destructive">
-                  {error}
-                </p>
-              )}
-              {actionError && (
-                <p className="text-[15px] font-medium text-destructive">
-                  {actionError}
-                </p>
-              )}
-              {loading && members.length === 0 && (
-                <p className="text-[15px] font-medium text-foreground-subtle">
-                  불러오는 중...
-                </p>
-              )}
-              {!loading && !error && members.length === 0 && (
-                <p className="text-[15px] font-medium text-foreground-subtle">
-                  멤버가 없습니다.
-                </p>
-              )}
-
-              {filtered.length > 0 && (
-                <MemberTable
-                  members={filtered}
-                  currentStdId={currentStdId}
-                  busyMemberId={busyId}
-                  editMode={editMode}
-                  onChangeRole={handleChangeRole}
-                  onChangePart={handleChangePart}
-                  onRemove={handleRemove}
-                />
-              )}
-            </>
-          ) : (
-            <div className="flex w-full flex-col gap-[30px]">
-              {statsError && (
-                <p className="pl-[8px] text-[15px] font-medium text-destructive">
-                  {statsError}
-                </p>
-              )}
-
-              <div className="flex items-stretch gap-[30px]">
-                <AttendanceChart
-                  title="기간별 출석률 추이 라인 차트"
-                  month=""
-                  weeks={trendLabels}
-                  series={trendSeries}
-                />
-                <div className="flex w-[360px] shrink-0">
-                  <StatusDonutChart segments={donutSegments} />
-                </div>
-              </div>
-              <div className="flex items-stretch gap-[30px]">
-                <div className="flex min-w-0 flex-1">
-                  <MemberRanking ranking={rankingNames} />
-                </div>
-                <div className="flex w-[300px] shrink-0 flex-col justify-center gap-[24px]">
-                  <button
-                    type="button"
-                    onClick={() => handleExport("csv")}
-                    disabled={exporting !== null}
-                    className="w-full rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90 disabled:opacity-50"
-                  >
-                    {exporting === "csv" ? "내보내는 중..." : "CSV 내보내기"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleExport("xls")}
-                    disabled={exporting !== null}
-                    className="w-full rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-                  >
-                    {exporting === "xls" ? "내보내는 중..." : "Excel 내보내기"}
-                  </button>
-                  {exportError && (
-                    <p className="text-[14px] font-medium text-destructive">
-                      {exportError}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+          {error && (
+            <p className="text-[15px] font-medium text-destructive">
+              {error}
+            </p>
           )}
-        </main>
-      </div>
-    </div>
+          {actionError && (
+            <p className="text-[15px] font-medium text-destructive">
+              {actionError}
+            </p>
+          )}
+          {loading && members.length === 0 && (
+            <p className="text-[15px] font-medium text-foreground-subtle">
+              불러오는 중...
+            </p>
+          )}
+          {!loading && !error && members.length === 0 && (
+            <p className="text-[15px] font-medium text-foreground-subtle">
+              멤버가 없습니다.
+            </p>
+          )}
+
+          {filtered.length > 0 && (
+            <MemberTable
+              members={filtered}
+              currentStdId={currentStdId}
+              busyMemberId={busyId}
+              editMode={editMode}
+              onChangeRole={handleChangeRole}
+              onChangePart={handleChangePart}
+              onRemove={handleRemove}
+            />
+          )}
+        </>
+      ) : (
+        <div className="flex w-full flex-col gap-[30px]">
+          {statsError && (
+            <p className="pl-[8px] text-[15px] font-medium text-destructive">
+              {statsError}
+            </p>
+          )}
+
+          <div className="flex items-stretch gap-[30px]">
+            <AttendanceChart
+              title="기간별 출석률 추이 라인 차트"
+              month=""
+              weeks={trendLabels}
+              series={trendSeries}
+            />
+            <div className="flex w-[360px] shrink-0">
+              <StatusDonutChart segments={donutSegments} />
+            </div>
+          </div>
+          <div className="flex items-stretch gap-[30px]">
+            <div className="flex min-w-0 flex-1">
+              <MemberRanking ranking={rankingNames} />
+            </div>
+            <div className="flex w-[300px] shrink-0 flex-col justify-center gap-[24px]">
+              <button
+                type="button"
+                onClick={() => handleExport("csv")}
+                disabled={exporting !== null}
+                className="w-full rounded-[20px] border-2 border-primary-hover bg-surface px-[80px] py-[20px] text-[18px] font-semibold text-primary-hover transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {exporting === "csv" ? "내보내는 중..." : "CSV 내보내기"}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport("xls")}
+                disabled={exporting !== null}
+                className="w-full rounded-[20px] bg-primary-hover px-[80px] py-[20px] text-[18px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {exporting === "xls" ? "내보내는 중..." : "Excel 내보내기"}
+              </button>
+              {exportError && (
+                <p className="text-[14px] font-medium text-destructive">
+                  {exportError}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

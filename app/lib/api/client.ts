@@ -28,13 +28,29 @@ export class ApiError extends Error {
   }
 }
 
+// 서버가 응답하지 않을 때 UI가 무한 대기하지 않도록 상한을 둔다.
+// 서버 DB 커넥션 타임아웃(30초)보다 짧게 잡아 사용자를 먼저 풀어준다.
+const TIMEOUT_MS = 10_000;
+
 export const http = axios.create({
   baseURL: BASE_URL,
+  timeout: TIMEOUT_MS,
   headers: { "Content-Type": "application/json" },
 });
 
-// 요청마다 Bearer 토큰 주입.
+// 인증 필터 예외 경로: 토큰을 받기 위한 요청이라 Authorization을 붙이면 안 된다.
+// 낡은 토큰이 실려 가면 서버 JWT 필터에서 불필요한 검증 실패를 유발한다.
+// 로그아웃은 토큰이 필요하므로 제외 대상이 아니다.
+const NO_AUTH_PATHS = [
+  "/api/v1/auth/login",
+  "/api/v1/auth/signup",
+  "/api/v1/auth/refresh",
+];
+
+// 요청마다 Bearer 토큰 주입(예외 경로 제외).
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const url = config.url ?? "";
+  if (NO_AUTH_PATHS.some((path) => url.startsWith(path))) return config;
   const token = getAccessToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
@@ -53,7 +69,10 @@ async function refreshAccessToken(): Promise<string | null> {
     const res = await axios.post<RsData<TokenResponse>>(
       `${BASE_URL}/api/v1/auth/refresh`,
       { refreshToken },
-      { headers: { "Content-Type": "application/json" } },
+      {
+        timeout: TIMEOUT_MS,
+        headers: { "Content-Type": "application/json" },
+      },
     );
     const { accessToken, refreshToken: newRefresh } = res.data.data ?? {};
     if (!res.data.success || !accessToken || !newRefresh) return null;
@@ -108,6 +127,13 @@ export async function request<T>(config: AxiosRequestConfig): Promise<T> {
   } catch (err) {
     if (err instanceof ApiError) throw err;
     const ax = err as AxiosError<RsData<unknown>>;
+    // 타임아웃은 axios 원문("timeout of 10000ms exceeded")이 그대로 노출되지 않게 치환한다.
+    if (ax.code === "ECONNABORTED" || ax.code === "ETIMEDOUT") {
+      throw new ApiError(
+        "서버 응답이 지연되고 있습니다. 잠시 후 다시 시도해주세요.",
+        ax.code,
+      );
+    }
     const info = ax.response?.data?.error;
     throw new ApiError(
       info?.message ?? ax.message ?? "네트워크 오류가 발생했습니다.",

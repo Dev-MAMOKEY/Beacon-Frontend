@@ -1,6 +1,4 @@
 import type { Route } from "./+types/sessions";
-import { AppHeader } from "~/components/layout/AppHeader";
-import { SideNavBar } from "~/components/layout/SideNavBar";
 import { PageHeading } from "~/components/dashboard/PageHeading";
 import { SessionCalendar } from "~/components/session/SessionCalendar";
 import { SessionCard } from "~/components/session/SessionCard";
@@ -27,46 +25,40 @@ export default function Sessions() {
   const { sessions, loading, error } = useSessions();
 
   return (
-    <div className="flex min-h-screen">
-      <SideNavBar />
-      <div className="flex flex-1 flex-col">
-        <AppHeader />
-        <main className="flex flex-1 gap-[30px] p-[30px]">
-          <div className="flex min-w-0 flex-1 flex-col gap-[30px]">
-            <PageHeading
-              title="세션 관리"
-              date={TODAY_LABEL}
-              titleClassName="text-foreground-subtle"
-            />
-            <SessionCalendar sessions={sessions} />
-          </div>
-
-          <div className="flex w-[300px] shrink-0 flex-col">
-            <div className="flex flex-1 flex-col items-center justify-center gap-[24px] rounded-t-[22px] bg-surface-sunken px-[18px] pb-[18px] pt-[26px]">
-              {error && (
-                <p className="text-[15px] font-medium text-destructive">{error}</p>
-              )}
-              {loading && (
-                <p className="text-[15px] font-medium text-foreground-subtle">
-                  불러오는 중...
-                </p>
-              )}
-              {!loading && !error && sessions.length === 0 && (
-                <p className="text-[15px] font-medium text-foreground-subtle">
-                  세션이 없습니다.
-                </p>
-              )}
-              {sessions.map((s, i) => (
-                <SessionCard
-                  key={s.sessionId ?? i}
-                  session={s}
-                  className={DIM[i] ?? "opacity-50"}
-                />
-              ))}
-            </div>
-          </div>
-        </main>
+    <main className="flex flex-1 gap-[30px] p-[30px]">
+      <div className="flex min-w-0 flex-1 flex-col gap-[30px]">
+        <PageHeading
+          title="세션 관리"
+          date={TODAY_LABEL}
+          titleClassName="text-foreground-subtle"
+        />
+        <SessionCalendar sessions={sessions} />
       </div>
-    </div>
+
+      <div className="flex w-[300px] shrink-0 flex-col">
+        <div className="flex flex-1 flex-col items-center justify-center gap-[24px] rounded-t-[22px] bg-surface-sunken px-[18px] pb-[18px] pt-[26px]">
+          {error && (
+            <p className="text-[15px] font-medium text-destructive">{error}</p>
+          )}
+          {loading && (
+            <p className="text-[15px] font-medium text-foreground-subtle">
+              불러오는 중...
+            </p>
+          )}
+          {!loading && !error && sessions.length === 0 && (
+            <p className="text-[15px] font-medium text-foreground-subtle">
+              세션이 없습니다.
+            </p>
+          )}
+          {sessions.map((s, i) => (
+            <SessionCard
+              key={s.sessionId ?? i}
+              session={s}
+              className={DIM[i] ?? "opacity-50"}
+            />
+          ))}
+        </div>
+      </div>
+    </main>
   );
 }

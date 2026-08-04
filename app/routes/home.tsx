@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import type { Route } from "./+types/home";
-import { AppHeader } from "~/components/layout/AppHeader";
-import { SideNavBar } from "~/components/layout/SideNavBar";
 import { PageHeading } from "~/components/dashboard/PageHeading";
 import { MetricCard } from "~/components/dashboard/MetricCard";
 import { AttendanceChart } from "~/components/dashboard/AttendanceChart";
@@ -143,48 +141,42 @@ export default function Home() {
     : "진행 중인 세션 없음";
 
   return (
-    <div className="flex min-h-screen">
-      <SideNavBar />
-      <div className="flex flex-1 flex-col">
-        <AppHeader />
-        <main className="flex flex-1 flex-col gap-[32px] px-[30px] pb-[30px] pt-[16px]">
-          <PageHeading
-            title="대시 보드"
-            date={dateLabel}
-            sessionStatus={sessionStatus}
-          />
+    <main className="flex flex-1 flex-col gap-[32px] px-[30px] pb-[30px] pt-[16px]">
+      <PageHeading
+        title="대시 보드"
+        date={dateLabel}
+        sessionStatus={sessionStatus}
+      />
 
-          <div className="flex w-full gap-[30px]">
-            <MetricCard
-              label="오늘 출석 수"
-              value={todayPresent}
-              valueClassName="text-primary-hover"
-            />
-            <MetricCard
-              label="오늘 지각 수"
-              value={todayLate}
-              valueClassName="text-warning"
-            />
-            <MetricCard label="전체 멤버 수" value={totalMembers} />
-            <MetricCard
-              label="평균 출석률"
-              value={avgRate}
-              unit="%"
-              valueClassName="text-primary-hover"
-            />
-          </div>
-
-          <div className="flex items-stretch gap-[34px]">
-            <AttendanceChart
-              title="기간별 출석률 추이"
-              month=""
-              weeks={trendLabels}
-              series={trendSeries}
-            />
-            <AttendanceFeed entries={feedTop} moreCount={moreCount} />
-          </div>
-        </main>
+      <div className="flex w-full gap-[30px]">
+        <MetricCard
+          label="오늘 출석 수"
+          value={todayPresent}
+          valueClassName="text-primary-hover"
+        />
+        <MetricCard
+          label="오늘 지각 수"
+          value={todayLate}
+          valueClassName="text-warning"
+        />
+        <MetricCard label="전체 멤버 수" value={totalMembers} />
+        <MetricCard
+          label="평균 출석률"
+          value={avgRate}
+          unit="%"
+          valueClassName="text-primary-hover"
+        />
       </div>
-    </div>
+
+      <div className="flex items-stretch gap-[34px]">
+        <AttendanceChart
+          title="기간별 출석률 추이"
+          month=""
+          weeks={trendLabels}
+          series={trendSeries}
+        />
+        <AttendanceFeed entries={feedTop} moreCount={moreCount} />
+      </div>
+    </main>
   );
 }
