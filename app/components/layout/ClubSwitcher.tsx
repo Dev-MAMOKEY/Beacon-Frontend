@@ -6,6 +6,7 @@ import { useClubs } from "~/hooks/use-clubs";
 /**
  * 활성 동아리 스위처. 현재 동아리명 + 드롭다운으로 전환.
  * 동아리가 1개면 이름만 표시하고, 없으면 렌더하지 않는다.
+ * 시안(409:2568): gray4 배경, radius 14, px-20 py-10, gray2 텍스트.
  */
 export function ClubSwitcher() {
   const { clubs } = useClubs();
@@ -24,7 +25,8 @@ export function ClubSwitcher() {
         onClick={() => !single && setOpen((v) => !v)}
         aria-haspopup={single ? undefined : "listbox"}
         aria-expanded={single ? undefined : open}
-        className="flex items-center gap-[8px] rounded-[12px] bg-border-subtle px-[16px] py-[8px] text-[16px] font-semibold text-foreground transition-colors hover:bg-border-subtle/70"
+        // 시안(409:2568) 기준. 고정폭 110px 대신 min-w로 둬 긴 동아리명도 잘리지 않게 한다.
+        className="flex min-w-[110px] items-center justify-between gap-[8px] rounded-[14px] bg-border-subtle px-[20px] py-[10px] text-[16px] font-semibold text-foreground-subtle transition-colors hover:bg-border-subtle/70"
       >
         <span className="max-w-[180px] truncate">{active.clubName}</span>
         {!single && <ChevronDown className="size-[16px] text-foreground-subtle" />}
@@ -40,7 +42,8 @@ export function ClubSwitcher() {
           />
           <ul
             role="listbox"
-            className="absolute left-0 top-[calc(100%+8px)] z-20 min-w-full overflow-hidden rounded-[12px] border border-border-subtle bg-surface py-[6px] shadow-lg"
+            // 헤더 우측 끝에 붙으므로 오른쪽 기준으로 펼쳐 화면 밖으로 넘치지 않게 한다.
+            className="absolute right-0 top-[calc(100%+8px)] z-20 min-w-full overflow-hidden rounded-[12px] border border-border-subtle bg-surface py-[6px] shadow-lg"
           >
             {clubs.map((c) => (
               <li key={c.clubId}>
