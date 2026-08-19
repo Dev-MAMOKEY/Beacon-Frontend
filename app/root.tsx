@@ -23,14 +23,19 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+// FOUC 방지: React 실행 전에 localStorage를 읽어 html 클래스를 미리 붙인다.
+// theme.ts의 THEME_STORAGE_KEY와 동기화 필요 ("beacon-theme").
+const themeInitScript = `(function(){try{var t=localStorage.getItem("beacon-theme");if(t==="light"||t==="dark"){document.documentElement.classList.add(t);}}catch(e){}})();`;
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
         {children}
